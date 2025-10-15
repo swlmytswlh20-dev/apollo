@@ -45,56 +45,70 @@
             z-index: 15;
         }
         
-        /* 3. הגדרות מותג וצבעים (ירוק ניאון/חשמלי) */
+        /* 3. עיצוב המותג והצבעים */
         .brand-green { background-color: #00E676; } 
         .brand-green:hover { background-color: #00c765; }
         .whatsapp-green { background-color: #25D366; }
         .whatsapp-green:hover { background-color: #128C7E; }
 
-        /* 4. עיצוב הכרטיס המרכזי (Dark Glassmorphism) */
+        /* 4. עיצוב הכרטיס המרכזי */
         .modal-card {
             z-index: 20;
-            backdrop-filter: blur(20px); /* טשטוש חזק */
-            background-color: rgba(255, 255, 255, 0.08); /* כרטיס שקוף מעט */
-            border: 1px solid rgba(0, 230, 118, 0.5); /* מסגרת ניאון בולטת יותר */
+            backdrop-filter: blur(20px); 
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(0, 230, 118, 0.5);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        /* 5. עיצוב שדות קלט ב-Dark Mode עם אפקט ניאון בפוקוס */
+        /* 5. עיצוב שדות קלט */
         .form-input {
-            background-color: rgba(30, 41, 59, 0.8); /* רקע כהה לשדה */
+            background-color: rgba(30, 41, 59, 0.8);
             border: 1px solid rgba(156, 163, 175, 0.3); 
             color: #fff;
         }
         .form-input:focus {
             background-color: #1f2937;
-            border-color: #00E676; /* גבול ירוק ניאון בפוקוס */
+            border-color: #00E676;
             box-shadow: 0 0 0 1px #00E676;
         }
 
         /* כפתור ניאון בולט יותר */
         .neon-cta-button {
-             /* צל ניאון חזק יותר */
             box-shadow: 0 0 20px rgba(37, 211, 102, 0.6), inset 0 0 10px rgba(37, 211, 102, 0.4); 
         }
         .neon-cta-button:hover {
             box-shadow: 0 0 30px rgba(37, 211, 102, 0.8), inset 0 0 15px rgba(37, 211, 102, 0.6);
         }
+
+        /* כרטיס הודעות */
+        .message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
 
+    <!-- הודעת טעינה / שגיאה - נסתרת כברירת מחדל -->
+    <div id="loading-message" class="message-box bg-gray-800 p-4 rounded-lg shadow-xl border border-yellow-500 hidden">
+        <p class="text-lg text-yellow-300 font-bold">טוען רקע וידאו...</p>
+        <p class="text-sm text-gray-400">אם ההודעה נשארת, אנא ודא שהקישור ל-MP4 תקין.</p>
+    </div>
+
     <!-- 1. רקע וידאו דרמטי וסאבטילי -->
-    <video autoplay muted loop id="background-video" preload="auto">
+    <video autoplay muted loop id="background-video" preload="auto" class="hidden">
         <!-- 
-            *** חשוב: החלף את ה-URL הזה בקישור לקובץ ה-MP4 הקצר והמוכן שלך! ***
-            זהו וידאו דוגמה ציבורי המדגים תנועת חלקיקים כהה.
+            *** קישור חדש ויציב לבדיקה (וידאו ציבורי של Blender Foundation) ***
+            אם זה עובד, הבעיה הייתה בקישור הקודם.
+            **החלף את ה-URL הזה בקישור ה-MP4 הציבורי שלך!**
         -->
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-dark-smoke-with-particles-in-a-black-background-47583-large.mp4" type="video/mp4">
+        <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
         
         <!-- Fallback (מוצג אם הוידאו לא נטען) -->
-        <img src="https://placehold.co/1920x1080/030303/00E676?text=VIDEO+FALLBACK+EFFECT" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover;">
+        <img src="https://placehold.co/1920x1080/030303/00E676?text=VIDEO+FALLBACK+EFFECT" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover; opacity: 1; z-index: 10; position: fixed;">
     </video>
 
     <!-- 2. שכבת על כהה -->
@@ -175,26 +189,66 @@
     </footer>
 
     <script>
+        const videoElement = document.getElementById('background-video');
+        const loadingMessage = document.getElementById('loading-message');
+
+        // הצגת הודעת טעינה עד שהוידאו מוכן
+        loadingMessage.classList.remove('hidden');
+
+        // פונקציה לניסיון נגינה (חובה עקב מדיניות דפדפנים)
+        function attemptPlay() {
+            // נסה לנגן את הוידאו
+            const playPromise = videoElement.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // הוידאו התחיל לנגן בהצלחה - הסתר את הודעת הטעינה
+                    loadingMessage.classList.add('hidden');
+                    videoElement.classList.remove('hidden');
+                    console.log('Video started successfully.');
+                }).catch(error => {
+                    // נכשל בניגון אוטומטי (קורה לעיתים רחוקות גם כשהוא מושתק)
+                    // נשאיר את הפולבק (תמונת הרקע הכהה) ונודיע ביומן
+                    loadingMessage.textContent = 'הווידאו לא נטען או נחסם אוטומטית. מוצגת תמונת רקע סטטית במקום.';
+                    videoElement.classList.add('hidden');
+                    console.error('Video Autoplay failed:', error);
+                });
+            }
+        }
+
+        // ודא שהוידאו נטען לחלוטין לפני הניסיון
+        videoElement.addEventListener('loadeddata', () => {
+             // ברגע שהוידאו נטען, ננסה להפעיל
+             attemptPlay();
+        });
+
+        // אם הוידאו כבר היה במצב טעון מראש
+        if (videoElement.readyState >= 2) {
+            attemptPlay();
+        } else {
+             // אם לוקח יותר משנייה לטעון, נציג הודעה
+             setTimeout(() => {
+                if (videoElement.classList.contains('hidden')) {
+                     loadingMessage.classList.remove('hidden');
+                }
+             }, 1000);
+        }
+
+        // לוגיקת אימות הטופס הקודמת
         document.getElementById('ageGateForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // =======================================================
-            // הגדרות חובה: הקישור לאתר Apollo System
-            // =======================================================
             const MINIMUM_AGE = 18; 
-            const STORE_URL = 'https://apollosystem.io'; // כתובת האתר שאליה יש להפנות
-            // =======================================================
+            const STORE_URL = 'https://apollosystem.io';
 
             const errorMessage = document.getElementById('error-message');
 
-            // קבלת נתוני הטופס
             const birthDateInput = document.getElementById('birthDate').value;
             const phoneNumberInput = document.getElementById('phoneNumber').value.replace(/[^0-9]/g, ''); 
             const fullNameInput = document.getElementById('fullName').value;
             const ageCheck = document.getElementById('ageCheck').checked;
             const termsCheck = document.getElementById('termsCheck').checked;
 
-            // בדיקת הגיל
             const today = new Date();
             const birthDate = new Date(birthDateInput);
             let age = today.getFullYear() - birthDate.getFullYear();
@@ -203,17 +257,14 @@
                 age--;
             }
 
-            // בדיקת תקינות כללית
             if (age < MINIMUM_AGE || !birthDateInput || phoneNumberInput.length < 9 || !ageCheck || !termsCheck) {
                 errorMessage.classList.remove('hidden');
                 errorMessage.textContent = 'אימות כניסה נכשל. אנא ודא/י שהנך מעל גיל ' + MINIMUM_AGE + ', שהמספר תקין ומילאת את כל השדות.';
                 return;
             }
 
-            // כל האימותים עברו בהצלחה!
             errorMessage.classList.add('hidden');
 
-            // *** כאן היית שולח את נתוני הליד למערכת ה-CRM/דיוור שלך ***
             console.log(`Lead collected: Name: ${fullNameInput || 'N/A'}, Phone: ${phoneNumberInput}, Age: ${age}. Redirecting to store...`);
             
             // הפניה אוטומטית לאתר Apollo System
