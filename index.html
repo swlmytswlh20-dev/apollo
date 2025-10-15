@@ -40,7 +40,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* שינוי 2: הבהרת ה-Overlay - הורדת האטימות של השחור מ-0.9 ל-0.85 */
+            /* הבהרת ה-Overlay - הורדת האטימות של השחור מ-0.9 ל-0.85 */
             background-image: radial-gradient(circle at center, rgba(0, 230, 118, 0.02) 0%, rgba(3, 3, 3, 0.85) 70%);
             z-index: 15;
         }
@@ -113,11 +113,11 @@
 
     <!-- 1. רקע וידאו דרמטי וסאבטילי -->
     <video autoplay muted loop id="background-video" preload="auto" class="hidden">
-        <!-- קישור וידאו מחודש: סרטון סטוק של משלוח פרחים/מוצר. (חשוב: השתמש בקישור MP4 ישיר אמיתי לפריסה) -->
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-man-delivering-a-bouquet-of-flowers-26058-large.mp4" type="video/mp4">
+        <!-- קישור וידאו חלופי וקצר יותר: שליח מביא פרחים (22 שניות) -->
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-delivery-man-handing-a-bouquet-to-a-woman-4482-large.mp4" type="video/mp4">
         
-        <!-- Fallback (מוצג אם הוידאו לא נטען) -->
-        <img src="https://placehold.co/1920x1080/030303/00E676?text=COURIER+DELIVERY+FALLBACK" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover; opacity: 1; z-index: 10; position: fixed;">
+        <!-- Fallback (תמונת סטוק באיכות גבוהה אם הוידאו לא נטען) -->
+        <img src="https://placehold.co/1920x1080/0d131f/00E676?text=COURIER+FLOWERS+DELIVERY+FALLBACK" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover; opacity: 1; z-index: 10; position: fixed;">
     </video>
 
     <!-- 2. שכבת על כהה -->
