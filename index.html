@@ -1,377 +1,191 @@
-
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אישור גיל וקבלת קופון</title>
+    <title>אישור גיל וקבלת קופון - Premium Video BG</title>
     <!-- טעינת Tailwind CSS -->
-    <title>מערכת APOLLO - קופון הנחה בלעדי</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- GTM - Replace GTM_CODE with the real Tag Manager ID -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-5LN9BSZV');</script>
-    <!-- End GTM -->
     <style>
-        /* הגדרת גופן ידידותי לקריאה בעברית */
-        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700&display=swap');
-        
-        /* הגדרת גופנים ורקע */
+        /* 1. הגדרות בסיס ורקע פרימיום (Dark Mode) */
         body {
             font-family: 'Inter', sans-serif;
-            position: relative; 
+            position: relative;
             min-height: 100vh;
+            background-color: #030303; /* שחור עמוק מאוד */
+            color: #e5e7eb; /* טקסט בהיר */
+            overflow-x: hidden; /* מונע גלילה אופקית */
         }
 
-        /* 1. רקע ותמונה: תמונה רגועה ומקצועית (רקע כהה ואורגני) */
-        .bg-custom-wellness {
-            font-family: 'Heebo', sans-serif;
-            /* רקע כהה מאוד, המרמז על עומק ואיכות */
-            background-image: url('https://placehold.co/1920x1080/0d1316/81a99a?text=Premium+Dark+Organic+Background');
-            background-size: cover;
-            background-position: center;
-            position: fixed; 
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-attachment: fixed;
-            min-height: 100vh;
+        /* הגדרות וידאו רקע: כיסוי מלא, דרמטי וסאבטילי */
+        #background-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 10;
+            opacity: 0.15; /* אטימות נמוכה מאוד - רק כרמז */
+            filter: grayscale(100%); /* מראה דרמטי מונוכרומטי */
+            object-fit: cover; /* מוודא שהוידאו מכסה את כל המסך */
+            transition: opacity 0.5s;
         }
 
-        /* 2. שכבת Overlay כהה לקריאות משופרת */
-        /* שכבת הצללה כהה מעל הרקע */
+        /* 2. שכבת Overlay - כהה וחזקה כדי להבטיח קריאות */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75); /* שכבת כהה עוד יותר לעומק */
-            z-index: 10;
-            background-color: rgba(0, 0, 0, 0.7);
+            /* רקע Gradient ליצירת אפקט עומק (Radial Gradient) */
+            background-image: radial-gradient(circle at center, rgba(0, 230, 118, 0.02) 0%, rgba(3, 3, 3, 0.9) 70%);
+            z-index: 15;
         }
         
-        /* 3. הגדרות מותג וצבעים עמוקים יותר */
-        .brand-green { background-color: #10B981; } /* Emerald 500 */
-        .brand-green:hover { background-color: #059669; }
-        .whatsapp-green { background-color: #10B981; } 
-        .whatsapp-green:hover { background-color: #059669; }
-        .focus-green { --tw-ring-color: #10B981; }
-        
-        /* 4. עיצוב הכרטיס המרכזי (Modal) - מראה פרימיום */
-        .modal-card {
-            z-index: 20; 
-            backdrop-filter: blur(15px); /* טשטוש חזק יותר */
-            background-color: rgba(255, 255, 255, 0.98); /* כמעט לבן אטום */
-            transition: all 0.4s ease-in-out;
-        }
-        
-        /* 5. צללית מותאמת אישית חזקה */
-        .shadow-custom-3xl {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1); /* צללית כהה יותר */
-        }
-        
-        /* 6. אפקט כפתור לחיצה */
-        .cta-button:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        /* 3. הגדרות מותג וצבעים (ירוק ניאון/חשמלי) */
+        .brand-green { background-color: #00E676; } 
+        .brand-green:hover { background-color: #00c765; }
+        .whatsapp-green { background-color: #25D366; }
+        .whatsapp-green:hover { background-color: #128C7E; }
 
-        /* סגנון כפתור CTA */
-        .cta-button {
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 99, 71, 0.4);
+        /* 4. עיצוב הכרטיס המרכזי (Dark Glassmorphism) */
+        .modal-card {
+            z-index: 20;
+            backdrop-filter: blur(20px); /* טשטוש חזק */
+            background-color: rgba(255, 255, 255, 0.08); /* כרטיס שקוף מעט */
+            border: 1px solid rgba(0, 230, 118, 0.5); /* מסגרת ניאון בולטת יותר */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
-        
-        /* 7. עיצוב הודעת ההצלחה */
-        .success-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 50;
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 99, 71, 0.6);
+
+        /* 5. עיצוב שדות קלט ב-Dark Mode עם אפקט ניאון בפוקוס */
+        .form-input {
+            background-color: rgba(30, 41, 59, 0.8); /* רקע כהה לשדה */
+            border: 1px solid rgba(156, 163, 175, 0.3); 
+            color: #fff;
+        }
+        .form-input:focus {
+            background-color: #1f2937;
+            border-color: #00E676; /* גבול ירוק ניאון בפוקוס */
+            box-shadow: 0 0 0 1px #00E676;
+        }
+
+        /* כפתור ניאון בולט יותר */
+        .neon-cta-button {
+             /* צל ניאון חזק יותר */
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.6), inset 0 0 10px rgba(37, 211, 102, 0.4); 
+        }
+        .neon-cta-button:hover {
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.8), inset 0 0 15px rgba(37, 211, 102, 0.6);
         }
     </style>
-    
-    <!-- ========================================================= -->
-    <!-- ✅ קוד Google Tag Manager (GTM) הוטמע כאן: GTM-5LN9BSZV ✅ -->
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;(f.parentNode || d.head).insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-5LN9BSZV');</script>
-    <!-- End Google Tag Manager -->
-    <!-- ========================================================= -->
 </head>
 <body class="flex items-center justify-center p-4">
-    
-    <!-- Google Tag Manager (noscript) - חובה: מיד לאחר תג ה-body הפותח -->
-<body class="text-right">
-    <!-- GTM NoScript (מנגנון חלופי למי שחסם JS) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5LN9BSZV"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End GTM NoScript -->
 
-    <!-- רקע ותמונת רקע -->
-    <div class="bg-custom-wellness"></div>
-    <div class="overlay"></div>
-    
-    <!-- ========================================================= -->
-    <!-- ✅ הודעת אישור (מוסתרת כברירת מחדל) -->
-    <!-- ========================================================= -->
-    <div id="success-modal" class="success-message hidden bg-white p-10 rounded-2xl shadow-custom-3xl text-center border-t-8 border-brand-green max-w-sm w-full transition-opacity duration-300 opacity-0">
-        <svg class="mx-auto h-16 w-16 text-brand-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 class="text-3xl font-extrabold text-gray-900 mt-4">אושר בהצלחה!</h3>
+    <!-- 1. רקע וידאו דרמטי וסאבטילי -->
+    <video autoplay muted loop id="background-video" preload="auto">
+        <!-- 
+            *** חשוב: החלף את ה-URL הזה בקישור לקובץ ה-MP4 הקצר והמוכן שלך! ***
+            זהו וידאו דוגמה ציבורי המדגים תנועת חלקיקים כהה.
+        -->
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-dark-smoke-with-particles-in-a-black-background-47583-large.mp4" type="video/mp4">
         
-        <!-- מיקום קוד הקופון החדש -->
-        <p class="text-gray-700 mt-2 text-lg">קוד הקופון שלך הוא:</p>
-        <p id="coupon-display" class="text-3xl font-black px-4 py-2 mt-2 brand-green text-white rounded-xl tracking-widest shadow-lg inline-block">
-            <!-- הקוד יוזרק לכאן באמצעות JavaScript -->
-        </p>
-        <p class="text-gray-700 mt-4 text-lg">הקופון נשמר ונשלח לווטסאפ/מייל, ואתר APOLLO נפתח בחלון חדש.</p>
-        <p class="text-sm text-gray-500 mt-1">(מפנה אוטומטית...)</p>
-    </div>
-    <!-- ========================================================= -->
+        <!-- Fallback (מוצג אם הוידאו לא נטען) -->
+        <img src="https://placehold.co/1920x1080/030303/00E676?text=VIDEO+FALLBACK+EFFECT" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover;">
+    </video>
 
-    <div class="overlay min-h-screen flex items-center justify-center p-4">
-        <!-- כרטיס ראשי - מודרני ואלגנטי -->
-        <div class="bg-gray-900 border border-red-500/50 p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-lg space-y-6 text-white">
+    <!-- 2. שכבת על כהה -->
+    <div class="overlay"></div>
 
-    <!-- כרטיס דף הנחיתה המרכזי (מעוצב) -->
-    <div id="form-card" class="modal-card max-w-md w-full rounded-2xl shadow-custom-3xl p-10 space-y-8 border-t-4 border-brand-green">
-
-        <!-- **תוספת חדשה: כיון אמין ואיכותי** -->
-        <div class="text-center mb-6">
-            <p class="inline-block px-4 py-1 text-base font-extrabold tracking-wider bg-green-100 text-brand-green rounded-full shadow-lg border border-brand-green/30 uppercase">
-                ✅ כיון אמין ואיכותי
-            </p>
-        </div>
-        <!-- **סוף תוספת חדשה** -->
+    <!-- כרטיס דף הנחיתה המרכזי -->
+    <div class="modal-card max-w-lg w-full rounded-3xl p-10 space-y-8">
 
         <!-- כותרת ראשית H1: ההבטחה -->
-        <h1 class="text-4xl font-extrabold text-gray-900 text-center leading-snug">
-            🌿 גישה VIP וקופון הנחה מיוחד ממערכת APOLLO 🎁
+        <h1 class="text-4xl font-extrabold text-white text-center leading-snug tracking-wide">
+            🌿 פורטל פרימיום נפתח: קוד הנחה וגישה מיידית ל-Apollo
         </h1>
 
         <!-- כותרת משנה H2: הדגש על אחריות -->
-        <p class="text-gray-700 text-center text-md font-medium">
-            כניסה מהירה לאתר המלא! אנא אשר את גילך **(18+)** והסכמתך לתנאים כדי לקבל גישה מיידית לקוד הקופון המובטח.
+        <p class="text-gray-300 text-center text-base font-light">
+            על פי דרישות הרגולציה: אנא אשר/י את גילך **(18+)** והסכמה מלאה לתנאי השימוש שלנו כדי להשלים את הרישום.
         </p>
 
         <!-- טופס אימות ולידים -->
-        <form id="ageGateForm" class="space-y-5">
+        <form id="ageGateForm" class="space-y-6">
             <!-- הודעות שגיאה גלובליות -->
-            <div id="error-message" class="hidden p-3 bg-red-100 border-r-4 border-red-500 text-red-700 rounded-lg text-sm text-right font-semibold shadow-md">
-                אנא מלא/י את כל שדות הטופס, סמן/י את שני האישורים ואת תאריך הלידה.
+            <div id="error-message" class="hidden p-4 bg-red-900/50 border border-red-500 text-red-300 rounded-lg text-sm text-right font-semibold">
+                אימות נכשל. ודא/י שהנך מעל גיל 18 ושכל השדות סומנו ומולאו כנדרש.
             </div>
 
             <!-- 1. אימות גיל (שדה חובה) -->
             <div class="space-y-2">
-                <label for="birthDate" class="block text-sm font-bold text-gray-700">1. תאריך לידה מלא (DD/MM/YYYY):</label>
-                <input type="date" id="birthDate" name="birthDate" required class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-inner focus:ring-4 focus-green focus:border-brand-green">
-            <!-- כותרת ראשית -->
-            <div class="text-center space-y-2">
-                <h1 class="text-4xl font-bold text-red-500">מערכת APOLLO</h1>
-                <p class="text-xl font-light text-gray-300">קבל עכשיו <span class="text-red-400 font-semibold">קוד הנחה בלעדי!</span></p>
-                <p class="text-sm text-gray-500 pt-2">אנא מלא/י את הפרטים כדי לקבל את הקופון ולהיכנס לאתר.</p>
+                <label for="birthDate" class="block text-sm font-bold text-gray-200">1. תאריך לידה מלא (DD/MM/YYYY):</label>
+                <input type="date" id="birthDate" name="birthDate" required class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none text-lg placeholder-gray-500">
             </div>
 
             <!-- 2. לכידת לידים (מספר טלפון לווטסאפ - שדה חובה) -->
             <div class="space-y-2">
-                <label for="phoneNumber" class="block text-sm font-bold text-gray-700">2. מספר טלפון (WhatsApp) לקבלת הקופון:**</label>
-                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="05X-XXXXXXX" minlength="9" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-inner focus:ring-4 focus-green focus:border-brand-green">
+                <label for="phoneNumber" class="block text-sm font-bold text-gray-200">2. מספר טלפון (וואטסאפ) לקבלת קוד ההנחה:</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="05X-XXXXXXX" minlength="9" class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none text-lg placeholder-gray-500">
             </div>
 
             <!-- 3. שם פרטי (רשות) -->
             <div class="space-y-2">
-                <label for="fullName" class="block text-sm font-medium text-gray-700">3. שם מלא:</label>
-                <input type="text" id="fullName" name="fullName" placeholder="שמך המלא" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-inner focus:ring-4 focus-green focus:border-brand-green">
-            
-            <!-- הודעת שגיאה (מוסתרת כברירת מחדל) -->
-            <div id="error-message" class="hidden bg-red-800/20 text-red-400 p-3 rounded-lg text-sm font-medium border border-red-700/50">
-                <!-- טקסט השגיאה יוזן כאן על ידי JS -->
+                <label for="fullName" class="block text-sm font-medium text-gray-400">3. שם פרטי (אופציונלי):</label>
+                <input type="text" id="fullName" name="fullName" placeholder="שמך המלא" class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none placeholder-gray-500">
             </div>
 
-            <!-- טופס -->
-            <form id="lead-form" class="space-y-5">
-                <!-- שדה שם מלא -->
-                <div>
-                    <label for="fullNameInput" class="block text-sm font-medium text-gray-400 mb-1">שם מלא:</label>
-                    <input type="text" id="fullNameInput" name="fullNameInput" placeholder="שם ושם משפחה" required
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500">
-                </div>
 
             <!-- 4. אישור תנאים רגולטורי (Checkboxes) -->
-            <div class="space-y-3 pt-2">
+            <div class="space-y-4 pt-3 text-right">
                 <div class="flex items-start">
-                    <input id="ageCheck" name="ageCheck" type="checkbox" required class="h-5 w-5 text-brand-green border-gray-300 rounded-md focus:ring-brand-green">
-                    <label for="ageCheck" class="mr-3 text-sm text-gray-700 cursor-pointer select-none">
+                    <input id="ageCheck" name="ageCheck" type="checkbox" required class="h-5 w-5 text-brand-green border-gray-600 rounded focus:ring-brand-green mt-1 bg-gray-700">
+                    <label for="ageCheck" class="mr-3 text-base text-gray-300 cursor-pointer font-semibold">
                         אני מאשר/ת שאני עומד/ת בדרישות גיל המינימום החוקי **(18+)**.
                     </label>
-                <!-- שדה מספר טלפון -->
-                <div>
-                    <label for="phoneNumberInput" class="block text-sm font-medium text-gray-400 mb-1">מספר טלפון:</label>
-                    <input type="tel" id="phoneNumberInput" name="phoneNumberInput" placeholder="לדוגמה: 052-1234567" required minlength="9"
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500"
-                           pattern="[0-9]{9,10}" title="אנא הזן/י מספר טלפון תקין">
                 </div>
                 <div class="flex items-start">
-                    <input id="termsCheck" name="termsCheck" type="checkbox" required class="h-5 w-5 text-brand-green border-gray-300 rounded-md focus:ring-brand-green">
-                    <label for="termsCheck" class="mr-3 text-sm text-gray-700 cursor-pointer select-none">
-                        אני מאשר/ת שקראתי והסכמתי ל<a href="#terms-and-privacy" class="text-brand-green hover:underline font-bold">תנאי השימוש ומדיניות הפרטיות</a> של המערכת.
+                    <input id="termsCheck" name="termsCheck" type="checkbox" required class="h-5 w-5 text-brand-green border-gray-600 rounded focus:ring-brand-green mt-1 bg-gray-700">
+                    <label for="termsCheck" class="mr-3 text-base text-gray-300 cursor-pointer font-semibold">
+                        אני מאשר/ת שקראתי והסכמתי ל<a href="#terms-and-privacy" class="text-brand-green hover:underline font-bold transition duration-150">תנאי השימוש ומדיניות הפרטיות</a>.
                     </label>
-                
-                <!-- שדה תאריך לידה -->
-                <div>
-                    <label for="birthDateInput" class="block text-sm font-medium text-gray-400 mb-1">תאריך לידה:</label>
-                    <input type="date" id="birthDateInput" name="birthDateInput" required
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500">
                 </div>
             </div>
 
-            <!-- כפתור קריאה לפעולה (CTA) - בולט ודינמי -->
-            <button type="submit" class="cta-button w-full flex justify-center items-center py-4 px-4 rounded-xl shadow-2xl text-xl font-extrabold text-white brand-green focus:outline-none focus:ring-4 focus:ring-offset-2 focus-green transition duration-200 ease-in-out hover:brand-green/90">
-                אישור, קבלת קופון וגישה לאתר APOLLO
+            <!-- כפתור קריאה לפעולה (CTA) - ניאון חזק -->
+            <button type="submit" class="neon-cta-button w-full flex justify-center items-center py-4 px-6 rounded-xl text-xl font-black text-gray-900 brand-green focus:outline-none focus:ring-8 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-300 ease-in-out transform hover:scale-[1.02]">
+                אישור וכניסה מיידית
             </button>
         </form>
-                <!-- אישורי צ'קבוקס -->
-                <div class="space-y-3 pt-2">
-                    <!-- אישור גיל 18+ -->
-                    <div class="flex items-center space-x-2 space-x-reverse">
-                        <input id="ageCheck" type="checkbox" required class="form-checkbox h-4 w-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500">
-                        <label for="ageCheck" class="text-sm text-gray-400 select-none">אני מאשר/ת שאני מעל גיל 18</label>
-                    </div>
-                    
-                    <!-- אישור תקנון -->
-                    <div class="flex items-center space-x-2 space-x-reverse">
-                        <input id="termsCheck" type="checkbox" required class="form-checkbox h-4 w-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500">
-                        <label for="termsCheck" class="text-sm text-gray-400 select-none">אני מאשר/ת את התקנון ואת מדיניות הפרטיות</label>
-                    </div>
-                </div>
 
         <!-- סייג רפואי (Disclaimer) קטן בתחתית הכרטיס -->
-        <p class="text-xs text-gray-600 text-center pt-4 border-t border-gray-200 mt-4">
-            תוכן זה אינו מהווה ייעוץ רפואי. יש להתייעץ עם רופא מוסמך לפני תחילת או שינוי כל טיפול.
+        <p class="text-xs text-gray-500 text-center pt-2">
+            סייג: המידע אינו מהווה תחליף לייעוץ רפואי או משפטי.
         </p>
-                <!-- כפתור הגשה -->
-                <button type="submit" class="cta-button w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-lg tracking-wider">
-                    אישור, קבלת קופון וגישה לאתר APOLLO
-                </button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- מודאל הצלחה (מוסתר כברירת מחדל) -->
-    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-gray-900 border border-green-500/50 p-8 rounded-xl shadow-2xl w-full max-w-md text-center text-white space-y-6">
-            <svg class="mx-auto h-16 w-16 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-            <h2 class="text-3xl font-bold text-green-400">הקופון שלך מוכן!</h2>
-            <p class="text-lg text-gray-300">השתמש/י בקוד זה כדי לקבל הנחה: </p>
-            <div class="bg-gray-800 border-dashed border-2 border-green-600 p-4 rounded-lg flex justify-between items-center select-all">
-                <span id="modal-coupon-code" class="text-3xl font-extrabold tracking-widest text-white mx-auto"></span>
-            </div>
-            <p class="text-sm text-gray-400">האתר ייפתח אוטומטית בעוד 5 שניות. לחץ/י למטה אם לא נפתח.</p>
-            <a id="modal-redirect-link" target="_blank" class="block w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-md transition duration-300 cursor-pointer">
-                מעבר לאתר APOLLO
-            </a>
-        </div>
     </div>
 
-    <!-- פוטר עם סייגים נוספים ופרטי התקשרות -->
-    <footer id="terms-and-privacy" class="fixed bottom-0 w-full bg-gray-900/80 backdrop-blur-sm p-3 text-center text-xs text-gray-300 border-t border-gray-700 z-30">
-        &copy; 2025 **APOLLO**. כל הזכויות שמורות. | מייל לשאלות: <a href="mailto:swlmytswlh20@gmail.com" class="text-white hover:text-brand-green font-medium">**swlmytswlh20@gmail.com**</a>
+    <!-- פוטר משודרג עם רקע כהה -->
+    <footer id="terms-and-privacy" class="fixed bottom-0 w-full bg-gray-900/95 backdrop-blur-lg p-3 text-center text-xs text-gray-500 border-t border-gray-800 z-30 shadow-2xl">
+        &copy; 2024 שם העסק שלך. כל הזכויות שמורות. | <a href="mailto:contact@youremail.com" class="text-gray-300 hover:text-brand-green font-medium transition duration-150">contact@youremail.com</a>
         <br>
-        המוצרים באתר כפופים לחוקי המדינה ומיועדים רק למשתמשים מעל גיל **18** ובעלי רישיון/מרשם מתאים (היכן שנדרש).
+        השימוש באתר כפוף לחוקי המדינה ומותר רק למשתמשים מעל גיל **18**.
     </footer>
 
     <script>
-        // פונקציה חדשה להצגת הודעת ההצלחה וההפניה
-        function showSuccessModal(storeUrl, couponCode) {
-            const formCard = document.getElementById('form-card');
-            const successModal = document.getElementById('success-modal');
-            const couponDisplay = document.getElementById('coupon-display');
-            
-            // הצגת קוד הקופון במודאל
-            couponDisplay.textContent = couponCode; 
-        // =============================================================
-        // הגדרות קבועות (לא לתרגם אותן)
-        const MINIMUM_AGE = 18;
-        const STORE_URL = 'https://apollosystem.io'; // כתובת האתר שאליה יש להפנות
-        const TARGET_EMAIL = 'swlmytswlh20@gmail.com';
-        const COUPON_CODE = 'APOLLO10'; // קוד הקופון הקבוע
-        // =============================================================
-
-            // 1. הסתרת הטופס והצגת המודאל
-            formCard.classList.add('opacity-0');
-            formCard.classList.add('hidden');
-            successModal.classList.remove('hidden');
-            
-            // השהיה קצרה לפני הופעת האנימציה
-            setTimeout(() => {
-                successModal.classList.remove('opacity-0');
-            }, 50);
-        // --- פונקציות עזר ---
-        
-        // פונקציה להצגת המודאל והפניית משתמש
-        function showSuccessModal(url, coupon) {
-            const modal = document.getElementById('success-modal');
-            const couponSpan = document.getElementById('modal-coupon-code');
-            const redirectLink = document.getElementById('modal-redirect-link');
-
-            // 2. פתיחת האתר בחלון חדש
-            window.open(storeUrl, '_blank');
-            
-            // 3. הסתרת המודאל (לאחר 3 שניות)
-            couponSpan.textContent = coupon;
-            redirectLink.href = url;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
-            // הפנייה אוטומטית לאחר 5 שניות ופתיחת חלון חדש
-            setTimeout(() => {
-                successModal.classList.add('opacity-0');
-            }, 3000); // 3 שניות
-                window.open(url, '_blank');
-            }, 5000);
-
-            // הפנייה מיידית בלחיצה על הכפתור
-            redirectLink.addEventListener('click', () => {
-                window.open(url, '_blank');
-            });
-        }
-        
-        document.getElementById('ageGateForm').addEventListener('submit', async function(e) {
+        document.getElementById('ageGateForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             // =======================================================
-            // הגדרות חובה
+            // הגדרות חובה: הקישור לאתר Apollo System
             // =======================================================
             const MINIMUM_AGE = 18; 
             const STORE_URL = 'https://apollosystem.io'; // כתובת האתר שאליה יש להפנות
-            const TARGET_EMAIL = 'swlmytswlh20@gmail.com'; 
-            // ✅ קוד הקופון הקבוע שהוזן
-            const COUPON_CODE = 'APOLLO10';
             // =======================================================
-        // --- לוגיקת הטופס ---
-        
-        const errorMessage = document.getElementById('error-message');
-        const form = document.getElementById('lead-form'); 
-        const submitButton = document.querySelector('.cta-button');
 
             const errorMessage = document.getElementById('error-message');
-            const submitButton = document.querySelector('.cta-button');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
 
             // קבלת נתוני הטופס
             const birthDateInput = document.getElementById('birthDate').value;
@@ -379,164 +193,32 @@
             const fullNameInput = document.getElementById('fullName').value;
             const ageCheck = document.getElementById('ageCheck').checked;
             const termsCheck = document.getElementById('termsCheck').checked;
-            // קבלת שדות הטופס (משתנים מקומיים)
-            const birthDateInput = document.getElementById('birthDateInput');
-            const phoneNumberInput = document.getElementById('phoneNumberInput');
-            const fullNameInput = document.getElementById('fullNameInput');
-            const ageCheck = document.getElementById('ageCheck');
-            const termsCheck = document.getElementById('termsCheck');
 
-            // --- לוגיקת אימות משופרת ---
-            if (!ageCheck || !termsCheck || !birthDateInput || phoneNumberInput.length < 9) {
-            // ניקוי וקבלת ערכים
-            const birthDateValue = birthDateInput.value;
-            const phoneNumberValue = phoneNumberInput.value.replace(/[^0-9]/g, '');
-            const fullNameValue = fullNameInput.value;
-            
-            // --- 1. בדיקת תקינות ואימות שדות ---
-            if (!ageCheck.checked || !termsCheck.checked || !birthDateValue || phoneNumberValue.length < 9 || fullNameValue.length < 2) {
-                errorMessage.classList.remove('hidden');
-                errorMessage.textContent = 'אנא מלא/י את כל שדות הטופס, סמן/י את שני האישורים ואת תאריך הלידה.';
-                return; 
-                return;
-            }
-            
             // בדיקת הגיל
-
-            // --- 2. בדיקת הגיל ---
             const today = new Date();
             const birthDate = new Date(birthDateInput);
-            const birthDate = new Date(birthDateValue);
             let age = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
-            
-            // התאמת גיל אם יום ההולדת עוד לא חל
             if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
                 age--;
             }
 
-            if (age < MINIMUM_AGE) {
+            // בדיקת תקינות כללית
+            if (age < MINIMUM_AGE || !birthDateInput || phoneNumberInput.length < 9 || !ageCheck || !termsCheck) {
                 errorMessage.classList.remove('hidden');
-                errorMessage.textContent = 'אישור כניסה נכשל: האתר מיועד למשתמשים מעל גיל ' + MINIMUM_AGE + '.';
-                return; 
+                errorMessage.textContent = 'אימות כניסה נכשל. אנא ודא/י שהנך מעל גיל ' + MINIMUM_AGE + ', שהמספר תקין ומילאת את כל השדות.';
                 return;
             }
 
+            // כל האימותים עברו בהצלחה!
             errorMessage.classList.add('hidden');
 
-            // =====================================================================
-            // ✅ שליחת הליד ל-FormSubmit
-            // =====================================================================
-            // =========================================================================
-            // ✅ 3. שליחת הלייד ל-FormSubmit (מילות מפתח באנגלית)
-            // =========================================================================
-            const formSubmitUrl = `https://formsubmit.co/ajax/${encodeURIComponent(TARGET_EMAIL)}`;
-
-            const leadData = {
-                name: fullNameInput,
-                phone: phoneNumberInput,
-                birth_date: birthDateInput,
-                name: fullNameValue,
-                phone: phoneNumberValue,
-                birth_date: birthDateValue,
-                age: age,
-                source: 'Apollo_Coupon_Landing_Page',
-                coupon: COUPON_CODE, // הוספת הקופון לנתוני הליד
-                source: 'apollo_coupon_landing_page',
-                coupon: COUPON_CODE, // הוספת הקופון
-                _subject: 'ליד חדש מדף הנחיתה של APOLLO'
-            };
-
-@@ -294,6 +231,7 @@
-            }
-
-            let leadSentSuccessfully = false;
-
-            try {
-                submitButton.textContent = 'שולח נתונים... אנא המתן';
-                submitButton.disabled = true;
-@@ -306,61 +244,45 @@
-                const result = await response.json();
-
-                if (response.ok && result.success === "true") {
-                    console.log('Lead submitted successfully to email via FormSubmit.');
-                    // דחיפת אירוע המרה ל-Google Tag Manager (רק בהצלחת שליחה)
-                    if (typeof dataLayer !== 'undefined') {
-                        dataLayer.push({
-                            'event': 'lead_submitted',
-                            'lead_phone': phoneNumberInput,
-                            'lead_age': age,
-                            'coupon_code': COUPON_CODE
-                        });
-                        console.log('Conversion event pushed to GTM: lead_submitted');
-                    }
-                    console.log('הליד נשלח בהצלחה לדוא"ל דרך FormSubmit.');
-                    leadSentSuccessfully = true;
-                } else {
-                    // בדיקה אם השגיאה היא השגיאה הצפויה של 'לא מאוחסן'
-                    // בדיקה אם השגיאה היא השגיאה הצפויה 'open this page through a web server'
-                    const isExpectedLocalError = result.message && result.message.includes("open this page through a web server");
-
-                    if (isExpectedLocalError) {
-                        console.warn('FormSubmit reported expected failure (page not hosted). Proceeding with GTM/Visual success for local testing context.');
-                        console.warn('FormSubmit דיווח על כשל צפוי (הדף לא מתארח). ממשיך עם הצלחה לצורך GTM/Visual.');
-                    } else {
-                        console.error('FormSubmit failed unexpectedly. Response:', result);
-                        console.error('הגשת הטופס נכשלה באופן בלתי צפוי. תגובה:', result);
-                    }
-
-                    // אם FormSubmit נכשל (צפוי או לא צפוי), עדיין נרצה לדחוף את האירוע ולהפנות (לאימות GTM)
-                    if (typeof dataLayer !== 'undefined') {
-                         dataLayer.push({ 
-                            'event': 'lead_submitted', 
-                            'lead_phone': phoneNumberInput, 
-                            'lead_age': age,
-                            'coupon_code': COUPON_CODE
-                        });
-                         console.log('Conversion event pushed to GTM: lead_submitted (FALLBACK)');
-                    }
-                    leadSentSuccessfully = true; // נחשב הצלחה לצורך GTM והודעה ויזואלית
-                    // ממשיכים בכל מקרה כדי שהמשתמש יקבל את הקופון והאירוע יישלח ל-GTM
-                    leadSentSuccessfully = true; 
-                }
-            } catch (error) {
-                console.error('Error sending lead data (network issue):', error);
-                
-                // במקרה של שגיאת רשת, עדיין ממשיכים להפניה ו-GTM
-                if (typeof dataLayer !== 'undefined') {
-                     dataLayer.push({ 
-                        'event': 'lead_submitted', 
-                        'lead_phone': phoneNumberInput, 
-                        'lead_age': age,
-                        'coupon_code': COUPON_CODE
-                     });
-                }
-                leadSentSuccessfully = true;
-                console.error('שגיאה בשליחת נתוני ליד (בעיית רשת):', error);
-                leadSentSuccessfully = true; // במקרה של כשל רשת, עדיין ממשיכים
-            } finally {
-                submitButton.textContent = 'אישור, קבלת קופון וגישה לאתר APOLLO';
-                submitButton.disabled = false;
-            }
-
-            // הצגת הודעת הצלחה והפניה לאתר
-            // =========================================================================
-            // ✅ 4. שליחת GTM והצגת הצלחה/הפניה
-            // =========================================================================
-            if (leadSentSuccessfully) {
-                 showSuccessModal(STORE_URL, COUPON_CODE); // מעביר את קוד הקופון לפונקציה
-                // דחיפת אירוע המרה ל-Google Tag Manager
-                if (typeof dataLayer !== 'undefined') {
-                    dataLayer.push({
-                        'event': 'lead_submitted',
-                        'lead_phone': phoneNumberValue,
-                        'age': age,
-                        'coupon_code': COUPON_CODE
-                    });
-                    console.log('אירוע המרה נדחף ל-GTM: lead_submitted');
-                }
-                
-                showSuccessModal(STORE_URL, COUPON_CODE); // מעביר את הקוד וה-URL
-            }
+            // *** כאן היית שולח את נתוני הליד למערכת ה-CRM/דיוור שלך ***
+            console.log(`Lead collected: Name: ${fullNameInput || 'N/A'}, Phone: ${phoneNumberInput}, Age: ${age}. Redirecting to store...`);
+            
+            // הפניה אוטומטית לאתר Apollo System
+            window.location.href = STORE_URL;
         });
     </script>
+</body>
+</html>
