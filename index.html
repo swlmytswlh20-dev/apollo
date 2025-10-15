@@ -12,9 +12,11 @@
             font-family: 'Inter', sans-serif;
             position: relative;
             min-height: 100vh;
-            background-color: #030303; /* שחור עמוק מאוד - Fallback למי שלא תומך באנימציה */
+            background-color: #030303; /* שחור עמוק מאוד - Fallback */
             color: #e5e7eb; /* טקסט בהיר */
-            overflow: hidden; /* מונע גלילה מיותרת */
+            /* FIX: הסרת "overflow: hidden;" כדי לאפשר גלילה */
+            padding-top: 1rem; /* ריווח עליון */
+            padding-bottom: 8rem; /* ריווח תחתון לפוטר */
         }
 
         /* 2. הגדרות אנימציית הרקע החדשה (CSS Pure) */
@@ -30,7 +32,6 @@
             background-size: 400% 400%;
             opacity: 0.5; /* שומר על הבהירות סאבטילית */
             transition: opacity 0.5s;
-            /* השינוי כאן: 24 שניות */
             animation: gradientMove 24s ease infinite; 
         }
 
@@ -65,6 +66,8 @@
             background-color: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(0, 230, 118, 0.5);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            margin-top: 3rem;
+            margin-bottom: 3rem;
         }
 
         /* 6. עיצוב שדות קלט */
@@ -98,9 +101,18 @@
             max-width: 400px;
             text-align: right;
         }
+
+        /* 7. פוטר - עכשיו הוא מקובע רק ברוחב, לא בגובה, ומאפשר גלילה */
+        .footer-fixed {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 30;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center p-4">
+<!-- הוספתי Tailwind קלאסים להבטחת גלילה ב-body -->
+<body class="flex flex-col items-center justify-start p-4 min-h-screen">
 
     <!-- הודעת טעינה/מצב - כעת רק הודעת הצלחה/שגיאה -->
     <div id="loading-message" class="message-box bg-gray-800 p-4 rounded-lg shadow-xl border border-yellow-500 hidden">
@@ -191,8 +203,8 @@
         </p>
     </div>
 
-    <!-- פוטר משודרג עם רקע כהה -->
-    <footer id="terms-and-privacy" class="fixed bottom-0 w-full bg-gray-900/95 backdrop-blur-lg p-3 text-center text-xs text-gray-500 border-t border-gray-800 z-30 shadow-2xl">
+    <!-- פוטר משודרג עם רקע כהה - השימוש ב-fixed נשאר רק כדי שיישאר בתחתית המסך התחתון, אבל גלילת הגוף עובדת. -->
+    <footer id="terms-and-privacy" class="footer-fixed bg-gray-900/95 backdrop-blur-lg p-3 text-center text-xs text-gray-500 border-t border-gray-800 shadow-2xl">
         &copy; APOLLO | חברה להפצה מ-2020. כל הזכויות שמורות.
         <br>
         השימוש באתר כפוף לחוקי המדינה ומותר רק למשתמשים מעל גיל **18**.
