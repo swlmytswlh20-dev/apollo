@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אישור גיל וקבלת קופון - Premium Video BG</title>
+    <title>אישור גיל וקבלת קופון - רקע מונפש</title>
     <!-- טעינת Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -12,46 +12,53 @@
             font-family: 'Inter', sans-serif;
             position: relative;
             min-height: 100vh;
-            background-color: #030303; /* שחור עמוק מאוד */
+            background-color: #030303; /* שחור עמוק מאוד - Fallback למי שלא תומך באנימציה */
             color: #e5e7eb; /* טקסט בהיר */
-            overflow-x: hidden; /* מונע גלילה אופקית */
+            overflow: hidden; /* מונע גלילה מיותרת */
         }
 
-        /* הגדרות וידאו רקע: כיסוי מלא, דרמטי וסאבטילי */
-        #background-video {
+        /* 2. הגדרות אנימציית הרקע החדשה (CSS Pure) */
+        .animated-background {
             position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 10;
-            /* שינוי 1: הגדלת אטימות הוידאו ל-0.35 (ברור יותר) */
-            opacity: 0.35; 
-            object-fit: cover; /* מוודא שהוידאו מכסה את כל המסך */
+            /* הגדרת גרדיאנט ענק (400% 400%) שינוע לאט */
+            background: linear-gradient(-45deg, #0d131f, #030303, #00E676, #0d131f);
+            background-size: 400% 400%;
+            opacity: 0.5; /* שומר על הבהירות סאבטילית */
             transition: opacity 0.5s;
+            /* השינוי כאן: 24 שניות */
+            animation: gradientMove 24s ease infinite; 
         }
 
-        /* 2. שכבת Overlay - כהה וחזקה כדי להבטיח קריאות */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 3. שכבת Overlay - כהה וחזקה כדי להבטיח קריאות */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            /* הבהרת ה-Overlay - הורדת האטימות של השחור מ-0.9 ל-0.85 */
-            background-image: radial-gradient(circle at center, rgba(0, 230, 118, 0.02) 0%, rgba(3, 3, 3, 0.85) 70%);
+            /* שכבה אגרסיבית יותר כדי להדגיש את התוכן */
+            background-image: radial-gradient(circle at center, rgba(0, 230, 118, 0.02) 0%, rgba(3, 3, 3, 0.88) 70%);
             z-index: 15;
         }
         
-        /* 3. עיצוב המותג והצבעים */
+        /* 4. עיצוב המותג והצבעים */
         .brand-green { background-color: #00E676; } 
         .brand-green:hover { background-color: #00c765; }
         .whatsapp-green { background-color: #25D366; }
         .whatsapp-green:hover { background-color: #128C7E; }
 
-        /* 4. עיצוב הכרטיס המרכזי */
+        /* 5. עיצוב הכרטיס המרכזי (Glass-morphism) */
         .modal-card {
             z-index: 20;
             backdrop-filter: blur(20px); 
@@ -60,7 +67,7 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
-        /* 5. עיצוב שדות קלט */
+        /* 6. עיצוב שדות קלט */
         .form-input {
             background-color: rgba(30, 41, 59, 0.8);
             border: 1px solid rgba(156, 163, 175, 0.3); 
@@ -95,32 +102,26 @@
 </head>
 <body class="flex items-center justify-center p-4">
 
-    <!-- הודעת טעינה / שגיאה - נסתרת כברירת מחדל -->
+    <!-- הודעת טעינה/מצב - כעת רק הודעת הצלחה/שגיאה -->
     <div id="loading-message" class="message-box bg-gray-800 p-4 rounded-lg shadow-xl border border-yellow-500 hidden">
-        <p class="text-lg text-yellow-300 font-bold">טוען רקע וידאו...</p>
-        <p class="text-sm text-gray-400">אם ההודעה נשארת, אנא ודא שהקישור ל-MP4 תקין.</p>
+        <p class="text-lg text-yellow-300 font-bold">הרקע המונפש טוען...</p>
+        <p class="text-sm text-gray-400">הטופס מוצג בהצלחה.</p>
     </div>
 
     <!-- הודעת הצלחה - נסתרת כברירת מחדל -->
     <div id="success-message" class="message-box bg-gray-900 p-8 rounded-xl shadow-2xl border border-brand-green hidden">
-        <h2 class="text-3xl font-extrabold text-brand-green mb-3">✅ אישור הצלחה!</h2>
-        <p class="text-white text-lg mb-6">פרטיך נקלטו בהצלחה. קוד ההנחה נשלח אליך למכשירך בוואטסאפ.</p>
+        <h2 class="text-3xl font-extrabold text-white mb-3">✅ אישור הצלחה!</h2>
+        <p class="text-gray-300 text-lg mb-6">פרטיך נקלטו בהצלחה. קוד ההנחה נשלח אליך למכשירך בוואטסאפ.</p>
         <button id="redirectToStore" class="neon-cta-button w-full flex justify-center items-center py-3 px-6 rounded-xl text-lg font-black text-gray-900 brand-green focus:outline-none focus:ring-8 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-300 ease-in-out">
             מעבר לחנות Apollo
         </button>
     </div>
 
 
-    <!-- 1. רקע וידאו דרמטי וסאבטילי -->
-    <video autoplay muted loop id="background-video" preload="auto" class="hidden">
-        <!-- קישור וידאו חלופי וקצר יותר: שליח מביא פרחים (22 שניות) -->
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-delivery-man-handing-a-bouquet-to-a-woman-4482-large.mp4" type="video/mp4">
-        
-        <!-- Fallback (תמונת סטוק באיכות גבוהה אם הוידאו לא נטען) -->
-        <img src="https://placehold.co/1920x1080/0d131f/00E676?text=COURIER+FLOWERS+DELIVERY+FALLBACK" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover; opacity: 1; z-index: 10; position: fixed;">
-    </video>
+    <!-- 1. רקע מונפש (CSS Gradient) -->
+    <div class="animated-background"></div>
 
-    <!-- 2. שכבת על כהה -->
+    <!-- 2. שכבת על כהה (Overlay) -->
     <div class="overlay"></div>
 
     <!-- כרטיס דף הנחיתה המרכזי -->
@@ -212,8 +213,6 @@
         let isFirebaseReady = false;
 
         // טוען רכיבי UI
-        const videoElement = document.getElementById('background-video');
-        const loadingMessage = document.getElementById('loading-message');
         const successMessage = document.getElementById('success-message');
         const landingCard = document.getElementById('landing-card');
         const formElement = document.getElementById('ageGateForm');
@@ -286,48 +285,7 @@
             }
         }
 
-        // --- 3. לוגיקת הפעלת וידאו רקע ---
-
-        // הצגת הודעת טעינה עד שהוידאו מוכן
-        loadingMessage.classList.remove('hidden');
-
-        // פונקציה לניסיון נגינה (חובה עקב מדיניות דפדפנים)
-        function attemptPlay() {
-            const playPromise = videoElement.play();
-
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // הוידאו התחיל לנגן בהצלחה - הסתר את הודעת הטעינה
-                    loadingMessage.classList.add('hidden');
-                    videoElement.classList.remove('hidden');
-                    console.log('Video started successfully.');
-                }).catch(error => {
-                    // נכשל בניגון אוטומטי
-                    loadingMessage.textContent = 'הווידאו לא נטען או נחסם אוטומטית. מוצגת תמונת רקע סטטית במקום.';
-                    videoElement.classList.add('hidden');
-                    console.error('Video Autoplay failed:', error);
-                });
-            }
-        }
-
-        // ודא שהוידאו נטען לחלוטין לפני הניסיון
-        videoElement.addEventListener('loadeddata', () => {
-             attemptPlay();
-        });
-
-        // אם הוידאו כבר היה במצב טעון מראש
-        if (videoElement.readyState >= 2) {
-            attemptPlay();
-        } else {
-             // אם לוקח יותר משנייה לטעון, נציג הודעה
-             setTimeout(() => {
-                if (videoElement.classList.contains('hidden')) {
-                     loadingMessage.classList.remove('hidden');
-                }
-             }, 1000);
-        }
-
-        // --- 4. לוגיקת אימות ושיגור הטופס ---
+        // --- 3. לוגיקת אימות ושיגור הטופס ---
         formElement.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -369,11 +327,10 @@
             if (saveSuccessful) {
                 // 3. הצגת הודעת הצלחה
                 landingCard.classList.add('hidden');
-                loadingMessage.classList.add('hidden');
                 successMessage.classList.remove('hidden');
                 console.log("Form submitted and lead saved.");
             } else {
-                // אם השמירה נכשלה, עדיין נציג הודעת שגיאה קלה, אבל לא נחסום לגמרי (ייתכן שזה יציג את הליד במקום אחר)
+                // אם השמירה נכשלה, עדיין נציג הודעת שגיאה קלה, אבל לא נחסום לגמרי
                 errorMessage.classList.remove('hidden');
                 errorMessage.textContent = 'אימות עבר, אך אירעה שגיאה בשמירת הנתונים. ננסה להפנות אותך בכל זאת.';
                 
@@ -384,7 +341,7 @@
             }
         });
 
-        // 5. ניווט לחנות לאחר ההצלחה
+        // 4. ניווט לחנות לאחר ההצלחה
         redirectToStoreButton.addEventListener('click', () => {
             window.location.href = STORE_URL;
         });
