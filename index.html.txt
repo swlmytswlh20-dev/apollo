@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+<!DOCTYPE ahtml>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>אישור גיל וקבלת קופון</title>
+    <!-- חובה לאתרי פרויקט ב-GitHub Pages: מגדיר את שורש האתר עבור כל הקישורים הפנימיים --><base href="/apollo/">
     <!-- טעינת Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* הגדרת גופן ידידותי לקריאה בעברית */
@@ -120,6 +121,19 @@
     </footer>
 
     <script>
+        // *** תיקון חובה ל-GitHub Pages Project Sites ***
+        // אם המשתמש מגיע לכתובת ללא לוכסן סופי (למשל, /apollo במקום /apollo/), הדפדפן מחפש את הקובץ במקום הלא נכון.
+        // הקוד הזה מוודא שזה לא קורה.
+        (function() {
+            const currentPath = window.location.pathname;
+            // בדיקה האם אנחנו בנתיב הפרויקט הנכון אבל חסר הלוכסן הסופי
+            if (currentPath.endsWith('/apollo') && !currentPath.endsWith('/apollo/')) {
+                // מפנה לכתובת עם הלוכסן הסופי
+                window.location.replace(window.location.href + '/');
+            }
+        })();
+        // *************************************************
+
         document.getElementById('ageGateForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -167,3 +181,4 @@
     </script>
 </body>
 </html>
+
