@@ -27,8 +27,8 @@
             width: auto;
             height: auto;
             z-index: 10;
-            opacity: 0.2; /* הוגבר מעט לאטימות רגועה יותר */
-            filter: grayscale(100%); /* מראה דרמטי מונוכרומטי */
+            /* שינוי 1: הגדלת אטימות הוידאו ל-0.35 (ברור יותר) */
+            opacity: 0.35; 
             object-fit: cover; /* מוודא שהוידאו מכסה את כל המסך */
             transition: opacity 0.5s;
         }
@@ -40,8 +40,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* רקע Gradient ליצירת אפקט עומק (Radial Gradient) */
-            background-image: radial-gradient(circle at center, rgba(0, 230, 118, 0.02) 0%, rgba(3, 3, 3, 0.9) 70%);
+            /* שינוי 2: הבהרת ה-Overlay - הורדת האטימות של השחור מ-0.9 ל-0.85 */
+            background-image: radial-gradient(circle at center, rgba(0, 230, 118, 0.02) 0%, rgba(3, 3, 3, 0.85) 70%);
             z-index: 15;
         }
         
@@ -113,11 +113,11 @@
 
     <!-- 1. רקע וידאו דרמטי וסאבטילי -->
     <video autoplay muted loop id="background-video" preload="auto" class="hidden">
-        <!-- קישור וידאו חדש: רגוע, מקצועי וטבעי, וחשוב מכל - ב-HTTPS! -->
-        <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" type="video/mp4">
+        <!-- קישור וידאו מחודש: סרטון סטוק של משלוח פרחים/מוצר. (חשוב: השתמש בקישור MP4 ישיר אמיתי לפריסה) -->
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-man-delivering-a-bouquet-of-flowers-26058-large.mp4" type="video/mp4">
         
         <!-- Fallback (מוצג אם הוידאו לא נטען) -->
-        <img src="https://placehold.co/1920x1080/030303/00E676?text=VIDEO+FALLBACK+EFFECT" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover; opacity: 1; z-index: 10; position: fixed;">
+        <img src="https://placehold.co/1920x1080/030303/00E676?text=COURIER+DELIVERY+FALLBACK" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover; opacity: 1; z-index: 10; position: fixed;">
     </video>
 
     <!-- 2. שכבת על כהה -->
@@ -192,7 +192,7 @@
 
     <!-- פוטר משודרג עם רקע כהה -->
     <footer id="terms-and-privacy" class="fixed bottom-0 w-full bg-gray-900/95 backdrop-blur-lg p-3 text-center text-xs text-gray-500 border-t border-gray-800 z-30 shadow-2xl">
-        &copy; 2024 **APOLLO** | חברה להפצה מ-2020. כל הזכויות שמורות.
+        &copy; APOLLO | חברה להפצה מ-2020. כל הזכויות שמורות.
         <br>
         השימוש באתר כפוף לחוקי המדינה ומותר רק למשתמשים מעל גיל **18**.
     </footer>
