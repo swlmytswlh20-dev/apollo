@@ -27,7 +27,7 @@
             width: auto;
             height: auto;
             z-index: 10;
-            opacity: 0.15; /* אטימות נמוכה מאוד - רק כרמז */
+            opacity: 0.2; /* הוגבר מעט לאטימות רגועה יותר */
             filter: grayscale(100%); /* מראה דרמטי מונוכרומטי */
             object-fit: cover; /* מוודא שהוידאו מכסה את כל המסך */
             transition: opacity 0.5s;
@@ -87,6 +87,9 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 50;
+            width: 90%;
+            max-width: 400px;
+            text-align: right;
         }
     </style>
 </head>
@@ -98,14 +101,20 @@
         <p class="text-sm text-gray-400">אם ההודעה נשארת, אנא ודא שהקישור ל-MP4 תקין.</p>
     </div>
 
+    <!-- הודעת הצלחה - נסתרת כברירת מחדל -->
+    <div id="success-message" class="message-box bg-gray-900 p-8 rounded-xl shadow-2xl border border-brand-green hidden">
+        <h2 class="text-3xl font-extrabold text-brand-green mb-3">✅ אישור הצלחה!</h2>
+        <p class="text-white text-lg mb-6">פרטיך נקלטו בהצלחה. קוד ההנחה נשלח אליך למכשירך בוואטסאפ.</p>
+        <button id="redirectToStore" class="neon-cta-button w-full flex justify-center items-center py-3 px-6 rounded-xl text-lg font-black text-gray-900 brand-green focus:outline-none focus:ring-8 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-300 ease-in-out">
+            מעבר לחנות Apollo
+        </button>
+    </div>
+
+
     <!-- 1. רקע וידאו דרמטי וסאבטילי -->
     <video autoplay muted loop id="background-video" preload="auto" class="hidden">
-        <!-- 
-            *** קישור חדש ויציב לבדיקה (וידאו ציבורי של Blender Foundation) ***
-            אם זה עובד, הבעיה הייתה בקישור הקודם.
-            **החלף את ה-URL הזה בקישור ה-MP4 הציבורי שלך!**
-        -->
-        <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+        <!-- קישור וידאו חדש: רגוע, מקצועי וטבעי (שמש זורחת מעל הים) -->
+        <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
         
         <!-- Fallback (מוצג אם הוידאו לא נטען) -->
         <img src="https://placehold.co/1920x1080/030303/00E676?text=VIDEO+FALLBACK+EFFECT" alt="רקע וידאו מונפש" style="width: 100%; height: 100%; object-fit: cover; opacity: 1; z-index: 10; position: fixed;">
@@ -115,7 +124,7 @@
     <div class="overlay"></div>
 
     <!-- כרטיס דף הנחיתה המרכזי -->
-    <div class="modal-card max-w-lg w-full rounded-3xl p-10 space-y-8">
+    <div id="landing-card" class="modal-card max-w-lg w-full rounded-3xl p-10 space-y-8">
 
         <!-- כותרת ראשית H1: ההבטחה -->
         <h1 class="text-4xl font-extrabold text-white text-center leading-snug tracking-wide">
@@ -183,21 +192,107 @@
 
     <!-- פוטר משודרג עם רקע כהה -->
     <footer id="terms-and-privacy" class="fixed bottom-0 w-full bg-gray-900/95 backdrop-blur-lg p-3 text-center text-xs text-gray-500 border-t border-gray-800 z-30 shadow-2xl">
-        &copy; 2024 שם העסק שלך. כל הזכויות שמורות. | <a href="mailto:contact@youremail.com" class="text-gray-300 hover:text-brand-green font-medium transition duration-150">contact@youremail.com</a>
+        &copy; 2024 **APOLLO** | חברה להפצה מ-2020. כל הזכויות שמורות.
         <br>
         השימוש באתר כפוף לחוקי המדינה ומותר רק למשתמשים מעל גיל **18**.
     </footer>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // הגדרות גלובליות נדרשות של Canvas
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+        // משתני Firebase
+        let db;
+        let auth;
+        let isFirebaseReady = false;
+
+        // טוען רכיבי UI
         const videoElement = document.getElementById('background-video');
         const loadingMessage = document.getElementById('loading-message');
+        const successMessage = document.getElementById('success-message');
+        const landingCard = document.getElementById('landing-card');
+        const formElement = document.getElementById('ageGateForm');
+        const errorMessage = document.getElementById('error-message');
+        const redirectToStoreButton = document.getElementById('redirectToStore');
+        const STORE_URL = 'https://apollosystem.io';
+
+
+        // --- 1. אתחול Firebase ואימות ---
+        if (Object.keys(firebaseConfig).length > 0) {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // אימות משתמש באמצעות Custom Token או כניסה אנונימית
+            const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            
+            const authenticate = (signInFunc) => {
+                signInFunc(auth, token)
+                    .then(() => {
+                        isFirebaseReady = true;
+                        console.log("Firebase signed in successfully.");
+                    })
+                    .catch(error => {
+                        console.error("Firebase authentication error:", error);
+                        // אם הכניסה נכשלה, מנסים כניסה אנונימית
+                        signInAnonymously(auth).then(() => {
+                             isFirebaseReady = true;
+                             console.log("Firebase signed in anonymously as fallback.");
+                        });
+                    });
+            };
+
+            if (token) {
+                 authenticate(signInWithCustomToken);
+            } else {
+                 authenticate(signInAnonymously);
+            }
+        } else {
+            console.error("Firebase config is missing or empty. Leads will not be saved.");
+        }
+
+
+        // --- 2. לוגיקת שמירת ליד ---
+        async function saveLead(data) {
+            if (!isFirebaseReady || !db) {
+                console.error("Firestore not ready or initialized. Cannot save lead.");
+                return false;
+            }
+
+            try {
+                const userId = auth.currentUser?.uid || 'anonymous';
+                // נתיב: /artifacts/{appId}/users/{userId}/leads
+                const leadsCollectionRef = collection(db, 'artifacts', appId, 'users', userId, 'leads');
+                
+                await addDoc(leadsCollectionRef, {
+                    name: data.name,
+                    phone: data.phone,
+                    birthDate: data.birthDate,
+                    age: data.age,
+                    timestamp: serverTimestamp(),
+                    source: 'ApolloLandingPage'
+                });
+
+                console.log("Lead saved successfully to Firestore.");
+                return true;
+            } catch (e) {
+                console.error("Error adding document to Firestore: ", e);
+                return false;
+            }
+        }
+
+        // --- 3. לוגיקת הפעלת וידאו רקע ---
 
         // הצגת הודעת טעינה עד שהוידאו מוכן
         loadingMessage.classList.remove('hidden');
 
         // פונקציה לניסיון נגינה (חובה עקב מדיניות דפדפנים)
         function attemptPlay() {
-            // נסה לנגן את הוידאו
             const playPromise = videoElement.play();
 
             if (playPromise !== undefined) {
@@ -207,8 +302,7 @@
                     videoElement.classList.remove('hidden');
                     console.log('Video started successfully.');
                 }).catch(error => {
-                    // נכשל בניגון אוטומטי (קורה לעיתים רחוקות גם כשהוא מושתק)
-                    // נשאיר את הפולבק (תמונת הרקע הכהה) ונודיע ביומן
+                    // נכשל בניגון אוטומטי
                     loadingMessage.textContent = 'הווידאו לא נטען או נחסם אוטומטית. מוצגת תמונת רקע סטטית במקום.';
                     videoElement.classList.add('hidden');
                     console.error('Video Autoplay failed:', error);
@@ -218,7 +312,6 @@
 
         // ודא שהוידאו נטען לחלוטין לפני הניסיון
         videoElement.addEventListener('loadeddata', () => {
-             // ברגע שהוידאו נטען, ננסה להפעיל
              attemptPlay();
         });
 
@@ -234,15 +327,12 @@
              }, 1000);
         }
 
-        // לוגיקת אימות הטופס הקודמת
-        document.getElementById('ageGateForm').addEventListener('submit', function(e) {
+        // --- 4. לוגיקת אימות ושיגור הטופס ---
+        formElement.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const MINIMUM_AGE = 18; 
-            const STORE_URL = 'https://apollosystem.io';
-
-            const errorMessage = document.getElementById('error-message');
-
+            
             const birthDateInput = document.getElementById('birthDate').value;
             const phoneNumberInput = document.getElementById('phoneNumber').value.replace(/[^0-9]/g, ''); 
             const fullNameInput = document.getElementById('fullName').value;
@@ -256,7 +346,8 @@
             if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
                 age--;
             }
-
+            
+            // 1. בדיקת תקינות נתונים
             if (age < MINIMUM_AGE || !birthDateInput || phoneNumberInput.length < 9 || !ageCheck || !termsCheck) {
                 errorMessage.classList.remove('hidden');
                 errorMessage.textContent = 'אימות כניסה נכשל. אנא ודא/י שהנך מעל גיל ' + MINIMUM_AGE + ', שהמספר תקין ומילאת את כל השדות.';
@@ -265,11 +356,39 @@
 
             errorMessage.classList.add('hidden');
 
-            console.log(`Lead collected: Name: ${fullNameInput || 'N/A'}, Phone: ${phoneNumberInput}, Age: ${age}. Redirecting to store...`);
-            
-            // הפניה אוטומטית לאתר Apollo System
+            // 2. שמירת הליד ל-Firestore
+            const leadData = {
+                name: fullNameInput || 'לא סופק',
+                phone: phoneNumberInput,
+                birthDate: birthDateInput,
+                age: age,
+            };
+
+            const saveSuccessful = await saveLead(leadData);
+
+            if (saveSuccessful) {
+                // 3. הצגת הודעת הצלחה
+                landingCard.classList.add('hidden');
+                loadingMessage.classList.add('hidden');
+                successMessage.classList.remove('hidden');
+                console.log("Form submitted and lead saved.");
+            } else {
+                // אם השמירה נכשלה, עדיין נציג הודעת שגיאה קלה, אבל לא נחסום לגמרי (ייתכן שזה יציג את הליד במקום אחר)
+                errorMessage.classList.remove('hidden');
+                errorMessage.textContent = 'אימות עבר, אך אירעה שגיאה בשמירת הנתונים. ננסה להפנות אותך בכל זאת.';
+                
+                // fallback redirect
+                setTimeout(() => {
+                    window.location.href = STORE_URL;
+                }, 3000);
+            }
+        });
+
+        // 5. ניווט לחנות לאחר ההצלחה
+        redirectToStoreButton.addEventListener('click', () => {
             window.location.href = STORE_URL;
         });
+
     </script>
 </body>
 </html>
