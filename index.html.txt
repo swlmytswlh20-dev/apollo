@@ -1,11 +1,11 @@
-<!DOCTYPE ahtml>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>אישור גיל וקבלת קופון</title>
-    <!-- חובה לאתרי פרויקט ב-GitHub Pages: מגדיר את שורש האתר עבור כל הקישורים הפנימיים --><base href="/apollo/">
-    <!-- טעינת Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- טעינת Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* הגדרת גופן ידידותי לקריאה בעברית */
         body {
@@ -16,8 +16,8 @@
 
         /* 1. רקע ותמונה: תמונה רגועה ומקצועית */
         .bg-custom-wellness {
-            /* תמונה חדשה: רקע מרגיע וצעיר (דוגמה: ירוק-כחול רך, טשטוש טבע) */
-            background-image: url('https://images.unsplash.com/photo-1517524008697-d86b970f438d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            /* השתמש בתמונה שמשדרת רוגע או מקצועיות (בלי קנאביס!) */
+            background-image: url('https://placehold.co/1920x1080/4f545a/ffffff?text=Professional+Wellness+Setting');
             background-size: cover;
             background-position: center;
             position: fixed; 
@@ -55,41 +55,51 @@
 </head>
 <body class="flex items-center justify-center p-4">
 
-    <!-- רקע ותמונת רקע (מופיע ראשון ב-DOM אך ממוקם ב-fixed) --><div class="bg-custom-wellness"></div>
+    <!-- רקע ותמונת רקע (מופיע ראשון ב-DOM אך ממוקם ב-fixed) -->
+    <div class="bg-custom-wellness"></div>
     <div class="overlay"></div>
 
-    <!-- כרטיס דף הנחיתה המרכזי (מעוצב) --><div class="modal-card max-w-md w-full rounded-2xl shadow-2xl p-8 space-y-6 border-t-8 border-brand-green transform hover:shadow-3xl">
+    <!-- כרטיס דף הנחיתה המרכזי (מעוצב) -->
+    <div class="modal-card max-w-md w-full rounded-2xl shadow-2xl p-8 space-y-6 border-t-8 border-brand-green transform hover:shadow-3xl">
 
-        <!-- כותרת ראשית H1: ההבטחה --><h1 class="text-3xl font-extrabold text-gray-900 text-center">
+        <!-- כותרת ראשית H1: ההבטחה -->
+        <h1 class="text-3xl font-extrabold text-gray-900 text-center">
             🎁 קבל/י קופון הנחה לרכישת מוצרים וגישה מיידית לאתר 🌿
         </h1>
 
-        <!-- כותרת משנה H2: הדגש על אחריות --><p class="text-gray-700 text-center text-sm font-medium">
+        <!-- כותרת משנה H2: הדגש על אחריות -->
+        <p class="text-gray-700 text-center text-sm font-medium">
             לפני שאתה צולל פנימה: אנו מחויבים לשימוש חוקי, בטוח ואחראי. אנא אשר את גילך והסכמתך כדי להיכנס לאתר החנות שלנו.
         </p>
 
-        <!-- טופס אימות ולידים --><form id="ageGateForm" class="space-y-4">
-            <!-- הודעות שגיאה גלובליות --><div id="error-message" class="hidden p-3 bg-red-100 border-r-4 border-red-500 text-red-700 rounded-lg text-sm text-right font-semibold">
+        <!-- טופס אימות ולידים -->
+        <form id="ageGateForm" class="space-y-4">
+            <!-- הודעות שגיאה גלובליות -->
+            <div id="error-message" class="hidden p-3 bg-red-100 border-r-4 border-red-500 text-red-700 rounded-lg text-sm text-right font-semibold">
                 אנא מלא/י את כל השדות בצורה נכונה ואשר את התנאים.
             </div>
 
-            <!-- 1. אימות גיל (שדה חובה) --><div class="space-y-2">
+            <!-- 1. אימות גיל (שדה חובה) -->
+            <div class="space-y-2">
                 <label for="birthDate" class="block text-sm font-bold text-gray-700">1. אנא הזן את תאריך הלידה המלא שלך (DD/MM/YYYY):</label>
                 <input type="date" id="birthDate" name="birthDate" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-inner focus:ring-brand-green focus:border-brand-green">
             </div>
 
-            <!-- 2. לכידת לידים (מספר טלפון לווטסאפ - שדה חובה) --><div class="space-y-2">
+            <!-- 2. לכידת לידים (מספר טלפון לווטסאפ - שדה חובה) -->
+            <div class="space-y-2">
                 <label for="phoneNumber" class="block text-sm font-bold text-gray-700">2. הזן מספר טלפון (וואטסאפ) לקבלת הקופון והגישה:</label>
                 <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="05X-XXXXXXX" minlength="9" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-inner focus:ring-brand-green focus:border-brand-green">
             </div>
 
-            <!-- 3. שם פרטי (רשות) --><div class="space-y-2">
+            <!-- 3. שם פרטי (רשות) -->
+            <div class="space-y-2">
                 <label for="fullName" class="block text-sm font-medium text-gray-700">3. שם פרטי (אופציונלי):</label>
                 <input type="text" id="fullName" name="fullName" placeholder="שמך המלא" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-inner focus:ring-brand-green focus:border-brand-green">
             </div>
 
 
-            <!-- 4. אישור תנאים רגולטורי (Checkboxes) --><div class="space-y-3 pt-2">
+            <!-- 4. אישור תנאים רגולטורי (Checkboxes) -->
+            <div class="space-y-3 pt-2">
                 <div class="flex items-start">
                     <input id="ageCheck" name="ageCheck" type="checkbox" required class="h-4 w-4 text-brand-green border-gray-300 rounded focus:ring-brand-green">
                     <label for="ageCheck" class="mr-3 text-sm text-gray-700 cursor-pointer">
@@ -104,36 +114,26 @@
                 </div>
             </div>
 
-            <!-- כפתור קריאה לפעולה (CTA) - בולט --><button type="submit" class="w-full flex justify-center items-center py-3 px-4 rounded-lg shadow-xl text-lg font-bold text-white whatsapp-green focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-200 ease-in-out hover:scale-[1.01]">
+            <!-- כפתור קריאה לפעולה (CTA) - בולט -->
+            <button type="submit" class="w-full flex justify-center items-center py-3 px-4 rounded-lg shadow-xl text-lg font-bold text-white whatsapp-green focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-200 ease-in-out hover:scale-[1.01]">
                 אישור גילי, קבלת קופון וכניסה לאתר
             </button>
         </form>
 
-        <!-- סייג רפואי (Disclaimer) קטן בתחתית הכרטיס --><p class="text-xs text-gray-600 text-center pt-2">
+        <!-- סייג רפואי (Disclaimer) קטן בתחתית הכרטיס -->
+        <p class="text-xs text-gray-600 text-center pt-2">
             תוכן זה אינו מהווה ייעוץ רפואי. יש להתייעץ עם רופא מוסמך לפני תחילת או שינוי כל טיפול.
         </p>
     </div>
 
-    <!-- פוטר עם סייגים נוספים ופרטי התקשרות --><footer id="terms-and-privacy" class="fixed bottom-0 w-full bg-gray-900/80 backdrop-blur-sm p-3 text-center text-xs text-gray-300 border-t border-gray-700 z-30">
+    <!-- פוטר עם סייגים נוספים ופרטי התקשרות -->
+    <footer id="terms-and-privacy" class="fixed bottom-0 w-full bg-gray-900/80 backdrop-blur-sm p-3 text-center text-xs text-gray-300 border-t border-gray-700 z-30">
         &copy; 2024 שם העסק שלך. כל הזכויות שמורות. | מייל לשאלות: <a href="mailto:contact@youremail.com" class="text-white hover:text-brand-green">contact@youremail.com</a>
         <br>
         המוצרים באתר כפופים לחוקי המדינה ומיועדים רק למשתמשים מעל גיל **18** ובעלי רישיון/מרשם מתאים (היכן שנדרש).
     </footer>
 
     <script>
-        // *** תיקון חובה ל-GitHub Pages Project Sites ***
-        // אם המשתמש מגיע לכתובת ללא לוכסן סופי (למשל, /apollo במקום /apollo/), הדפדפן מחפש את הקובץ במקום הלא נכון.
-        // הקוד הזה מוודא שזה לא קורה.
-        (function() {
-            const currentPath = window.location.pathname;
-            // בדיקה האם אנחנו בנתיב הפרויקט הנכון אבל חסר הלוכסן הסופי
-            if (currentPath.endsWith('/apollo') && !currentPath.endsWith('/apollo/')) {
-                // מפנה לכתובת עם הלוכסן הסופי
-                window.location.replace(window.location.href + '/');
-            }
-        })();
-        // *************************************************
-
         document.getElementById('ageGateForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -181,5 +181,3 @@
     </script>
 </body>
 </html>
-
-
