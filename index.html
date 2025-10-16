@@ -7,6 +7,8 @@
     <title data-lang-key="pageTitle">Age Verification & Premium Coupon - Animated Background</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- הוספת Font Awesome עבור לוגו WhatsApp רשמי -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* 1. Base Settings and Premium Dark Mode Background */
         body {
@@ -90,7 +92,7 @@
             box-shadow: 0 0 30px rgba(37, 211, 102, 0.8), inset 0 0 15px rgba(37, 211, 102, 0.6);
         }
 
-        /* Message Box */
+        /* Message Box / Modals - General Styling */
         .message-box {
             position: absolute;
             top: 50%;
@@ -109,6 +111,44 @@
             width: 100%;
             z-index: 30;
         }
+        
+        /* Specific Admin Panel Styling */
+        .lead-item {
+            border-bottom: 1px solid #1f2937; /* Dark border separator */
+        }
+        
+        /* 8. Floating WhatsApp Button Style */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 20px;
+            right: 20px; /* Standard bottom-right position */
+            background-color: #25D366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            /* Font size applies to the icon inside */
+            font-size: 30px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-start p-4 min-h-screen">
@@ -116,6 +156,11 @@
     <!-- 1. Language Switcher Button - Fixed top-right/left -->
     <button id="lang-toggle" class="fixed top-4 right-4 z-50 p-2 bg-gray-700/80 backdrop-blur-sm rounded-full text-white font-bold text-sm shadow-lg hover:bg-gray-600 transition duration-150">
         HE / EN
+    </button>
+    
+    <!-- Admin Button - Peace Dove Icon (Top Left, Small and Subtle) -->
+    <button id="admin-view-btn" class="fixed top-4 left-4 z-50 p-2 bg-gray-900/70 backdrop-blur-sm rounded-full text-xl shadow-lg hover:bg-gray-800 transition duration-150" aria-label="Admin View">
+        🕊️
     </button>
 
     <!-- Loading/Status Message -->
@@ -126,11 +171,43 @@
 
     <!-- Success Message - Hidden by default -->
     <div id="success-message" class="message-box bg-gray-900 p-8 rounded-xl shadow-2xl border border-brand-green hidden">
-        <h2 class="text-3xl font-extrabold text-white mb-3" data-lang-key="successTitle">✅ Success Confirmed!</h2>
-        <p class="text-gray-300 text-lg mb-6" data-lang-key="successText">Your details have been registered. The discount code has been sent to your device via WhatsApp.</p>
-        <button id="redirectToStore" class="neon-cta-button w-full flex justify-center items-center py-3 px-6 rounded-xl text-lg font-black text-gray-900 brand-green focus:outline-none focus:ring-8 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-300 ease-in-out" data-lang-key="successButton">
-            Proceed to Apollo Store
+        <h2 class="text-3xl font-extrabold text-white mb-3" data-lang-key="successTitle">✅ אימות הצלחה!</h2>
+        <p class="text-gray-300 text-lg mb-4" data-lang-key="successText">פרטיך נרשמו בהצלחה. קוד ההנחה הבלעדי שלך הוא:</p>
+        
+        <!-- Coupon Display Block -->
+        <div class="bg-brand-green/20 p-4 rounded-xl mb-6 border border-brand-green text-center">
+            <p class="text-sm text-gray-200 mb-1" data-lang-key="couponLabel">קוד קופון:</p>
+            <p class="text-3xl font-black text-brand-green tracking-widest" id="coupon-display">547A58</p>
+        </div>
+        <!-- End Coupon Display -->
+
+        <p class="text-gray-400 mb-6" data-lang-key="successFinalCta">
+            הפרטים שלך נשמרו בהצלחה במערכת. לחץ מטה למעבר מיידי לאתר ושימוש בקוד הקופון שהוצג.
+        </p>
+
+        <button id="completeAction" class="neon-cta-button w-full flex justify-center items-center py-3 px-6 rounded-xl text-lg font-black text-gray-900 brand-green focus:outline-none focus:ring-8 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-300 ease-in-out" data-lang-key="successButton">
+            מעבר מיידי לאתר ושימוש בקופון
         </button>
+    </div>
+
+    <!-- Admin Code Input Modal (Replaces prompt()) -->
+    <div id="admin-input-modal" class="message-box bg-gray-900 p-8 rounded-xl shadow-2xl border border-red-500 hidden">
+        <h2 class="text-2xl font-extrabold text-red-300 mb-4 text-center">🔐 Admin Access Required</h2>
+        <form id="admin-password-form" class="space-y-4">
+            <input type="password" id="admin-password-input" class="form-input w-full p-3 rounded-xl text-lg text-center tracking-wider" placeholder="הכנס קוד גישה">
+            <div id="password-error" class="text-red-400 text-sm hidden text-center font-semibold">קוד שגוי. נסה שוב.</div>
+            <button type="submit" class="w-full py-3 bg-red-600 rounded-xl font-bold text-white hover:bg-red-700 transition duration-150">כניסה</button>
+        </form>
+        <button id="cancel-admin-input" class="mt-4 w-full py-1 text-sm text-gray-500 hover:text-gray-300 transition duration-150">ביטול</button>
+    </div>
+
+    <!-- Admin Panel Modal - Hidden by default -->
+    <div id="admin-panel" class="message-box bg-gray-900/90 p-6 rounded-xl shadow-2xl border border-red-500 hidden max-w-lg">
+        <h2 class="text-2xl font-extrabold text-red-300 mb-4 text-center">Admin Leads Data</h2>
+        <div id="leads-list" class="space-y-3 max-h-80 overflow-y-auto p-3 border border-gray-700 rounded-lg">
+            <p class="text-gray-400 text-center">Loading leads...</p>
+        </div>
+        <button id="close-admin-btn" class="mt-4 w-full py-2 bg-red-600 rounded-lg font-bold hover:bg-red-700 transition duration-150">Close</button>
     </div>
 
 
@@ -145,39 +222,39 @@
 
         <!-- Main Title H1: The Promise -->
         <h1 class="text-4xl font-extrabold text-white text-center leading-snug tracking-wide" data-lang-key="mainTitle">
-            🌿 Premium Portal Unlocked: Instant Coupon Code and Apollo Access
+            🌿 פורטל פרימיום : קוד קופון מיידי וגישה ל-Apollo
         </h1>
 
         <!-- Subtitle H2: Emphasis on Responsibility -->
         <p class="text-gray-300 text-center text-base font-light" data-lang-key="subtitle">
-            As required by regulation: Please verify your age **(18+)** and full agreement to our Terms of Use to complete registration.
+            בהתאם לרגולציה: אנא אשר/י את גילך (**18+**) והסכמתך המלאה לתנאי השימוש שלנו כדי להשלים את ההרשמה.
         </p>
 
         <!-- Verification and Lead Form -->
         <form id="ageGateForm" class="space-y-6">
             <!-- Global Error Messages -->
             <div id="error-message" class="hidden p-4 bg-red-900/50 border border-red-500 text-red-300 rounded-lg text-sm text-left font-semibold" data-lang-key="errorMsg">
-                Verification failed. Please ensure you are over 18 and all required fields are correctly marked and filled.
+                אימות נכשל. אנא ודא/י שאתה מעל גיל 18 ושכל שדות החובה סומנו ומולאו כראוי.
             </div>
 
             <!-- 1. Age Verification (Required Field) -->
             <div class="space-y-2">
-                <label for="birthDate" class="block text-sm font-bold text-gray-200" data-lang-key="labelBirthDate">1. Full Date of Birth (DD/MM/YYYY):</label>
+                <label for="birthDate" class="block text-sm font-bold text-gray-200" data-lang-key="labelBirthDate">1. תאריך לידה מלא (DD/MM/YYYY):</label>
                 <input type="date" id="birthDate" name="birthDate" required class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none text-lg placeholder-gray-500">
             </div>
 
             <!-- 2. Lead Capture (WhatsApp Phone Number - Required Field) -->
             <div class="space-y-2">
-                <label for="phoneNumber" class="block text-sm font-bold text-gray-200" data-lang-key="labelPhone">2. Phone Number (WhatsApp) to receive the discount code:</label>
+                <label for="phoneNumber" class="block text-sm font-bold text-gray-200" data-lang-key="labelPhone">2. מספר טלפון (וואטסאפ) לשליחת הליד:</label>
                 <!-- ADDED maxlength="14" -->
-                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="+1 (555) 555-5555" minlength="9" maxlength="14" class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none text-lg placeholder-gray-500" data-lang-key="placeholderPhone" data-placeholder-en="+1 (555) 555-5555" data-placeholder-he="05X-XXXXXXX">
+                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="05X-XXXXXXX" minlength="9" maxlength="14" class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none text-lg placeholder-gray-500" data-lang-key="placeholderPhone" data-placeholder-en="+1 (555) 555-5555" data-placeholder-he="05X-XXXXXXX">
             </div>
 
             <!-- 3. Full Name (Optional) -->
             <div class="space-y-2">
-                <label for="fullName" class="block text-sm font-medium text-gray-400" data-lang-key="labelName">3. Full Name (Optional):</label>
+                <label for="fullName" class="block text-sm font-medium text-gray-400" data-lang-key="labelName">3. שם מלא (אופציונלי):</label>
                 <!-- ADDED maxlength="20" -->
-                <input type="text" id="fullName" name="fullName" placeholder="Your Full Name" maxlength="20" class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none placeholder-gray-500" data-lang-key="placeholderName" data-placeholder-en="Your Full Name" data-placeholder-he="שמך המלא">
+                <input type="text" id="fullName" name="fullName" placeholder="שמך המלא" maxlength="20" class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none placeholder-gray-500" data-lang-key="placeholderName" data-placeholder-en="Your Full Name" data-placeholder-he="שמך המלא">
             </div>
 
 
@@ -186,40 +263,47 @@
                 <div class="flex items-start">
                     <input id="ageCheck" name="ageCheck" type="checkbox" required class="h-5 w-5 text-brand-green border-gray-600 rounded focus:ring-brand-green mt-1 bg-gray-700">
                     <label for="ageCheck" class="ml-3 text-base text-gray-300 cursor-pointer font-semibold" data-lang-key="checkAge">
-                        I confirm that I meet the legal minimum age requirement **(18+)**.
+                        אני מאשר/ת שאני עומד/ת בדרישות גיל המינימום החוקי (**18+**).
                     </label>
                 </div>
                 <div class="flex items-start">
                     <input id="termsCheck" name="termsCheck" type="checkbox" required class="h-5 w-5 text-brand-green border-gray-600 rounded focus:ring-brand-green mt-1 bg-gray-700">
                     <label for="termsCheck" class="ml-3 text-base text-gray-300 cursor-pointer font-semibold" data-lang-key="checkTerms">
-                        I confirm that I have read and agreed to the <a href="#terms-and-privacy" class="text-brand-green hover:underline font-bold transition duration-150">Terms of Use and Privacy Policy</a>.
+                        אני מאשר/ת שקראתי והסכמתי ל<a href="#terms-and-privacy" class="text-brand-green hover:underline font-bold transition duration-150">תנאי השימוש ומדיניות הפרטיות</a>.
                     </label>
                 </div>
             </div>
 
             <!-- Call to Action (CTA) Button - Strong Neon -->
             <button type="submit" class="neon-cta-button w-full flex justify-center items-center py-4 px-6 rounded-xl text-xl font-black text-gray-900 brand-green focus:outline-none focus:ring-8 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-300 ease-in-out transform hover:scale-[1.02]" data-lang-key="ctaButton">
-                Confirm and Get Instant Access
+                אישור וקבלת גישה מיידית
             </button>
         </form>
 
         <!-- Medical Disclaimer at the bottom of the card -->
         <p class="text-xs text-gray-500 text-center pt-2" data-lang-key="disclaimer">
-            Disclaimer: The information does not constitute medical or legal advice.
+            סייג: המידע אינו מהווה ייעוץ רפואי או משפטי.
         </p>
     </div>
 
     <!-- Enhanced Footer with dark background - positioned fixed to bottom -->
     <footer id="terms-and-privacy" class="footer-fixed bg-gray-900/95 backdrop-blur-lg p-3 text-center text-xs text-gray-500 border-t border-gray-800 shadow-2xl">
-        <span data-lang-key="footerLine1">&copy; APOLLO | Distribution Company since 2020. All rights reserved.</span>
+        <span data-lang-key="footerLine1">&copy; APOLLO |כיוונים חברת הפצה משנת 2020. כל הזכויות שמורות.</span>
         <br>
-        <span data-lang-key="footerLine2">Use of this website is subject to local laws and is permitted only for users **aged 18 and over**.</span>
+        <span data-lang-key="footerLine2">השימוש באתר כפוף לחוקים המקומיים ומותר רק למשתמשים **מעל גיל 18**.</span>
     </footer>
+
+    <!-- Floating WhatsApp Chat Button - Updated to use Font Awesome Logo -->
+    <a href="#" id="whatsapp-float-btn" class="whatsapp-float hover:scale-110 transition duration-200" title="צ׳אט מהיר בוואטסאפ">
+        <!-- Official WhatsApp Icon from Font Awesome -->
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // IMPORTED getDocs and query for Admin View
+        import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =======================================================
         // 0. Language Configuration
@@ -231,7 +315,7 @@
                 'subtitle': 'As required by regulation: Please verify your age **(18+)** and full agreement to our Terms of Use to complete registration.',
                 'errorMsg': 'Verification failed. Please ensure you are over 18 and all required fields are correctly marked and filled.',
                 'labelBirthDate': '1. Full Date of Birth (DD/MM/YYYY):',
-                'labelPhone': '2. Phone Number (WhatsApp) to receive the discount code:',
+                'labelPhone': '2. Phone Number (WhatsApp) for lead submission:',
                 'placeholderPhone': '+1 (555) 555-5555',
                 'labelName': '3. Full Name (Optional):',
                 'placeholderName': 'Your Full Name',
@@ -242,8 +326,10 @@
                 'footerLine1': '&copy; APOLLO | Distribution Company since 2020. All rights reserved.',
                 'footerLine2': 'Use of this website is subject to local laws and is permitted only for users **aged 18 and over**.',
                 'successTitle': '✅ Success Confirmed!',
-                'successText': 'Your details have been registered. The discount code has been sent to your device via WhatsApp.',
-                'successButton': 'Proceed to Apollo Store',
+                'successText': 'Your details have been registered. Your exclusive discount code is:',
+                'couponLabel': 'Coupon Code:',
+                'successFinalCta': 'Your details have been successfully saved to the system. Click below for immediate redirection to the store and to use the displayed coupon code.',
+                'successButton': 'Instant Redirection to Store and Coupon Use',
                 'loadingTitle': 'Animated Background Loading...',
                 'loadingText': 'Form displayed successfully.'
             },
@@ -253,19 +339,21 @@
                 'subtitle': 'בהתאם לרגולציה: אנא אשר/י את גילך (**18+**) והסכמתך המלאה לתנאי השימוש שלנו כדי להשלים את ההרשמה.',
                 'errorMsg': 'אימות נכשל. אנא ודא/י שאתה מעל גיל 18 ושכל שדות החובה סומנו ומולאו כראוי.',
                 'labelBirthDate': '1. תאריך לידה מלא (DD/MM/YYYY):',
-                'labelPhone': '2. מספר טלפון (וואטסאפ) לקבלת קוד ההנחה:',
+                'labelPhone': '2. מספר טלפון (וואטסאפ) לשליחת הליד:',
                 'placeholderPhone': '05X-XXXXXXX',
                 'labelName': '3. שם מלא (אופציונלי):',
                 'placeholderName': 'שמך המלא',
-                'checkAge': 'אני מאשר/ת שאני עומד/ת בדרישות גיל המינימום החוקי (**18+**).',
+                'checkAge': 'אני מאשר/ת שאני עומד/ת בדרישות גיל המינינימום החוקי (**18+**).',
                 'checkTerms': 'אני מאשר/ת שקראתי והסכמתי ל<a href="#terms-and-privacy" class="text-brand-green hover:underline font-bold transition duration-150">תנאי השימוש ומדיניות הפרטיות</a>.',
                 'ctaButton': 'אישור וקבלת גישה מיידית',
                 'disclaimer': 'סייג: המידע אינו מהווה ייעוץ רפואי או משפטי.',
                 'footerLine1': '&copy; APOLLO | חברת הפצה משנת 2020. כל הזכויות שמורות.',
                 'footerLine2': 'השימוש באתר כפוף לחוקים המקומיים ומותר רק למשתמשים **מעל גיל 18**.',
-                'successTitle': '✅ אישור הצלחה!',
-                'successText': 'פרטיך נרשמו. קוד ההנחה נשלח למכשירך באמצעות וואטסאפ.',
-                'successButton': 'מעבר לחנות Apollo',
+                'successTitle': '✅ אימות הצלחה!',
+                'successText': 'פרטיך נרשמו בהצלחה. קוד ההנחה הבלעדי שלך הוא:',
+                'couponLabel': 'קוד קופון:',
+                'successFinalCta': 'הפרטים שלך נשמרו בהצלחה במערכת. לחץ מטה למעבר מיידי לאתר ושימוש בקוד הקופון שהוצג.',
+                'successButton': 'מעבר מיידי לאתר ושימוש בקופון', 
                 'loadingTitle': 'טעינת רקע מונפש...',
                 'loadingText': 'הטופס נטען בהצלחה.'
             }
@@ -293,7 +381,7 @@
                 } else if (element.tagName === 'TITLE') {
                     // Handle page title
                     document.title = text;
-                } else if (element.tagName === 'BUTTON' || element.tagName === 'LABEL' || element.tagName === 'P' || element.tagName === 'H1' || element.tagName === 'H2' || element.tagName === 'DIV' || element.tagName === 'SPAN') {
+                } else {
                     // Use innerHTML for text that contains an anchor tag (like terms check)
                     element.innerHTML = text;
                 }
@@ -337,6 +425,18 @@
         // 1. Firebase Initialization and Authentication
         // =======================================================
         
+        // --- ADMIN CONFIGURATION ---
+        // 1. The recipient of the lead details for the floating chat button
+        const WHATSAPP_NUMBER = '972505328761'; 
+        // 2. The coupon code displayed to the successful registrant
+        const COUPON_CODE = '547A58'; 
+        // 3. The URL to redirect the user to after successful lead capture
+        const STORE_URL = 'https://apollosystem.io';
+
+        // Set coupon display element immediately
+        document.getElementById('coupon-display').textContent = COUPON_CODE;
+
+
         // Global variables required by the Canvas environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
@@ -351,8 +451,20 @@
         const landingCard = document.getElementById('landing-card');
         const formElement = document.getElementById('ageGateForm');
         const errorMessage = document.getElementById('error-message');
-        const redirectToStoreButton = document.getElementById('redirectToStore');
-        const STORE_URL = 'https://apollosystem.io';
+        const completeActionButton = document.getElementById('completeAction');
+        const adminViewBtn = document.getElementById('admin-view-btn');
+        const adminPanel = document.getElementById('admin-panel');
+        const closeAdminBtn = document.getElementById('close-admin-btn');
+        const leadsList = document.getElementById('leads-list');
+        const whatsappFloatBtn = document.getElementById('whatsapp-float-btn'); 
+        
+        // ADMIN INPUT UI ELEMENTS
+        const adminInputModal = document.getElementById('admin-input-modal');
+        const adminPasswordForm = document.getElementById('admin-password-form');
+        const adminPasswordInput = document.getElementById('admin-password-input');
+        const passwordError = document.getElementById('password-error');
+        const cancelAdminInputBtn = document.getElementById('cancel-admin-input');
+        const ADMIN_CODE = '9876';
 
         
         if (Object.keys(firebaseConfig).length > 0) {
@@ -373,16 +485,16 @@
                         console.error("Firebase authentication error:", error);
                         // If token sign-in fails, try anonymous sign-in
                         signInAnonymously(auth).then(() => {
-                             isFirebaseReady = true;
-                             console.log("Firebase signed in anonymously as fallback.");
+                            isFirebaseReady = true;
+                            console.log("Firebase signed in anonymously as fallback.");
                         });
                     });
             };
 
             if (token) {
-                 authenticate(signInWithCustomToken);
+                authenticate(signInWithCustomToken);
             } else {
-                 authenticate(signInAnonymously);
+                authenticate(signInAnonymously);
             }
         } else {
             console.error("Firebase config is missing or empty. Leads will not be saved.");
@@ -399,6 +511,7 @@
             }
 
             try {
+                // IMPORTANT: Use the authenticated user's ID for secure storage
                 const userId = auth.currentUser?.uid || 'anonymous';
                 // Path: /artifacts/{appId}/users/{userId}/leads
                 const leadsCollectionRef = collection(db, 'artifacts', appId, 'users', userId, 'leads');
@@ -409,7 +522,8 @@
                     birthDate: data.birthDate,
                     age: data.age,
                     timestamp: serverTimestamp(),
-                    source: `ApolloLandingPage_${currentLang.toUpperCase()}` // Save the language used
+                    source: `ApolloLandingPage_${currentLang.toUpperCase()}`,
+                    coupon: COUPON_CODE // Save the coupon code used
                 });
 
                 console.log("Lead saved successfully to Firestore.");
@@ -423,6 +537,7 @@
         // =======================================================
         // 3. Verification and Form Submission Logic
         // =======================================================
+
         formElement.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -446,7 +561,7 @@
             // 1. Data Validation Check
             if (age < MINIMUM_AGE || !birthDateInput || phoneNumberInput.length < 9 || !ageCheck || !termsCheck) {
                 errorMessage.classList.remove('hidden');
-                // Use the localized error message
+                // Use the localized error message and ensure it includes the age requirement
                 errorMessage.textContent = LANGUAGES[currentLang].errorMsg.replace(/<[^>]*>?/gm, "") + ` (${MINIMUM_AGE}+)`;
                 return;
             }
@@ -455,34 +570,130 @@
 
             // 2. Save Lead to Firestore
             const leadData = {
-                name: fullNameInput || 'Not Provided',
+                name: fullNameInput || 'לא סופק',
                 phone: phoneNumberInput,
                 birthDate: birthDateInput,
                 age: age,
             };
+            
+            await saveLead(leadData);
 
-            const saveSuccessful = await saveLead(leadData);
+            // 3. Handle Success: Show success screen
+            landingCard.classList.add('hidden');
+            successMessage.classList.remove('hidden');
 
-            if (saveSuccessful) {
-                // 3. Display Success Message
-                landingCard.classList.add('hidden');
-                successMessage.classList.remove('hidden');
-                console.log("Form submitted and lead saved.");
-            } else {
-                // If saving fails, still show a mild error, but don't completely block
-                errorMessage.classList.remove('hidden');
-                errorMessage.textContent = 'Verification passed, but an error occurred while saving data. Attempting redirect anyway.';
+        });
+
+        // 4. Action Button on Success Screen (Triggers IMMEDIATE Redirection)
+        completeActionButton.addEventListener('click', () => {
+             // Redirect the user to the store immediately.
+             window.location.href = STORE_URL;
+        });
+        
+        // 5. Floating WhatsApp Chat Button Logic
+        whatsappFloatBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const chatMessage = "שלום, אני מעוניין/ת בהצעת פורטל הפרימיום של Apollo ויש לי כמה שאלות. אשמח לקבל פרטי גישה.";
+            const encodedMessage = encodeURIComponent(chatMessage);
+            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+            // Open in a new tab
+            window.open(whatsappUrl, '_blank');
+        });
+
+
+        // =======================================================
+        // 6. ADMIN VIEW LOGIC
+        // =======================================================
+        
+        async function fetchAndRenderLeads() {
+            leadsList.innerHTML = '<p class="text-yellow-400 text-center">טוען לידים... (Loading leads...)</p>';
+
+            if (!isFirebaseReady || !db || !auth.currentUser) {
+                leadsList.innerHTML = '<p class="text-red-400 text-center">שגיאה: Firebase לא מוכן או שלא התחברת כמשתמש המוגדר.</p>';
+                return;
+            }
+
+            try {
+                const userId = auth.currentUser.uid;
+                // Querying YOUR secured leads path
+                const leadsCollectionRef = collection(db, 'artifacts', appId, 'users', userId, 'leads');
+                const q = query(leadsCollectionRef); // No orderBy to avoid needing indexes
+
+                const querySnapshot = await getDocs(q);
                 
-                // fallback redirect
-                setTimeout(() => {
-                    window.location.href = STORE_URL;
-                }, 3000);
+                if (querySnapshot.empty) {
+                    leadsList.innerHTML = '<p class="text-gray-400 text-center">טרם נשמרו לידים.</p>';
+                    return;
+                }
+
+                let html = '';
+                querySnapshot.forEach((doc, index) => {
+                    const data = doc.data();
+                    const timestamp = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString('he-IL') : 'מיד (now)';
+                    
+                    html += `
+                        <div class="lead-item p-2 rounded-lg bg-gray-800 hover:bg-gray-700/70 transition duration-100">
+                            <p class="text-sm font-bold text-white">${index + 1}. ${data.name || '---'}</p>
+                            <p class="text-xs text-brand-green">📱 ${data.phone}</p>
+                            <p class="text-xs text-gray-400">🎂 גיל: ${data.age}, ת. לידה: ${data.birthDate}</p>
+                            <p class="text-xs text-yellow-400">🏷️ קופון: ${data.coupon || COUPON_CODE}</p>
+                            <p class="text-xs text-gray-500">⏰ נשמר ב: ${timestamp}</p>
+                        </div>
+                    `;
+                });
+                
+                leadsList.innerHTML = html;
+            } catch (error) {
+                console.error("Error fetching leads:", error);
+                leadsList.innerHTML = `<p class="text-red-400 text-center">שגיאה באחזור נתונים: ${error.message}</p>`;
+            }
+        }
+
+
+        // Event Listeners for Admin Input Modal (Dove Button)
+        adminViewBtn.addEventListener('click', () => {
+            // 1. Hide all main content
+            landingCard.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            adminPanel.classList.add('hidden');
+            
+            // 2. Show password input modal
+            adminInputModal.classList.remove('hidden');
+            adminPasswordInput.value = ''; // Clear previous input
+            passwordError.classList.add('hidden');
+            adminPasswordInput.focus();
+        });
+
+        // Event Listener for Password Form Submission
+        adminPasswordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const enteredPassword = adminPasswordInput.value;
+
+            if (enteredPassword === ADMIN_CODE) {
+                // Success: Hide input modal, show admin panel
+                adminInputModal.classList.add('hidden');
+                adminPanel.classList.remove('hidden');
+                fetchAndRenderLeads();
+            } else {
+                // Failure: Show error, clear input
+                passwordError.classList.remove('hidden');
+                adminPasswordInput.value = '';
+                adminPasswordInput.focus();
             }
         });
 
-        // 4. Navigation to the Store after success
-        redirectToStoreButton.addEventListener('click', () => {
-            window.location.href = STORE_URL;
+        // Event Listener for Cancel Button on Admin Input Modal
+        cancelAdminInputBtn.addEventListener('click', () => {
+            // Hide input modal, return to the main form
+            adminInputModal.classList.add('hidden');
+            landingCard.classList.remove('hidden');
+        });
+
+        // Event Listener for Close Button on Admin Panel
+        closeAdminBtn.addEventListener('click', () => {
+            // Close the admin panel, return to the main form
+            adminPanel.classList.add('hidden');
+            landingCard.classList.remove('hidden');
         });
 
     </script>
