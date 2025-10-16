@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-lang-key="pageTitle">Age Verification & Premium Coupon - Animated Background</title>
+    <title data-lang-key="pageTitle">אימות גיל וקופון פרימיום - רקע מונפש</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -11,7 +11,7 @@
         body {
             font-family: 'Inter', sans-serif;
             position: relative;
-            min-height: 10vh;
+            min-height: 100vh;
             background-color: #030303; /* Deep Black - Fallback */
             color: #e5e7eb; /* Light Text */
             padding-top: 1rem; /* Top spacing */
@@ -98,7 +98,46 @@
             z-index: 50;
             width: 90%;
             max-width: 400px;
-            text-align: left;
+            text-align: right; /* Changed default to RTL for initial load */
+        }
+
+        /* Full Screen Policy Modal */
+        #policy-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none; /* Hidden by default */
+            padding: 20px; 
+            overflow-y: auto; /* Fallback for very small screens */
+        }
+
+        /* CRITICAL FIX: Make the content box a flexible container that fills the height */
+        .policy-content-box {
+            background-color: #111827;
+            border: 1px solid #00E676;
+            box-shadow: 0 0 30px rgba(0, 230, 118, 0.4);
+            max-width: 800px;
+            margin: 0 auto; 
+            padding: 30px; /* Slightly reduced padding */
+            
+            /* Flexible Layout for scrollable content area */
+            display: flex;
+            flex-direction: column;
+            
+            /* Ensures the box fills max height available within the 40px vertical padding */
+            height: auto; 
+            min-height: 50vh;
+            max-height: calc(100vh - 40px); 
+        }
+
+        /* Target the content area to allow internal scrolling */
+        #policy-content {
+            flex-grow: 1; /* Allows content area to take up available space */
         }
 
         /* 7. Footer - Fixed to the bottom, allowing body content to scroll */
@@ -145,11 +184,29 @@
 </head>
 <body class="flex flex-col items-center justify-start p-4 min-h-screen">
     
+    <!-- MODAL: מדיניות פרטיות ותנאי שימוש -->
+    <div id="policy-modal" class="hidden">
+        <div class="policy-content-box rounded-xl">
+            <h2 id="policy-title" class="text-4xl font-extrabold text-[#00E676] mb-6 text-center" data-lang-key="policyTitle"></h2>
+            
+            <div id="policy-content" class="text-gray-300 space-y-4 leading-relaxed overflow-y-auto pr-2" data-lang-key="policyContent">
+                <!-- Content injected by JS -->
+            </div>
+
+            <div class="mt-8 text-center flex-shrink-0">
+                <button id="close-policy-modal" class="py-3 px-8 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl transition duration-200">
+                    סגור (חזור לטופס)
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <button id="lang-toggle" class="fixed top-4 right-4 z-50 p-2 bg-gray-700/80 backdrop-blur-sm rounded-full text-white font-bold text-sm shadow-lg hover:bg-gray-600 transition duration-150">
-        HE / EN
+        EN / HE
     </button>
     
-    <!-- כפתור מנהל מערכת (הפעלנו את הכפתור והוספנו לו סגנון הברקה) -->
+    <!-- כפתור מנהל מערכת (פעיל כעת) -->
     <button id="admin-view-btn" class="fixed top-4 left-4 z-50 p-2 bg-gray-900/70 backdrop-blur-sm rounded-full text-xl shadow-lg hover:bg-gray-800 transition duration-150 text-white hover:text-[#00E676] hover:shadow-[0_0_15px_#00E676]" aria-label="Admin View">
         🕊️
     </button>
@@ -157,14 +214,27 @@
 
     <div id="success-message" class="message-box bg-gray-900 p-8 rounded-xl shadow-2xl border border-brand-green hidden">
         <h2 class="text-3xl font-extrabold text-white mb-3" data-lang-key="successTitle">✅ אימות הצלחה!</h2>
-        <p class="text-gray-300 text-lg mb-4" data-lang-key="successText">פרטיך נרשמו בהצלחה. קוד ההנחה הבלעדי שלך הוא:</p>
+        <p class="text-gray-300 text-lg mb-4" data-lang-key="successText">גילך אומת בהצלחה. קוד ההנחה הבלעדי שלך הוא:</p>
         
-        <div class="bg-brand-green/20 p-4 rounded-xl mb-6 border border-brand-green text-center">
-            <p class="text-sm text-gray-200 mb-1" data-lang-key="couponLabel">קוד קופון:</p>
-            <p class="text-3xl font-black text-brand-green tracking-widest" id="coupon-display">547A58</p>
+        <!-- START: Coupon Display with Copy Button -->
+        <div class="bg-brand-green/20 p-4 rounded-xl mb-6 border border-brand-green text-center flex justify-between items-center">
+            
+            <div class="flex flex-col items-start w-full">
+                <p class="text-sm text-gray-200 mb-1" data-lang-key="couponLabel">קוד קופון:</p>
+                <div class="flex items-center w-full">
+                    <p class="text-3xl font-black text-brand-green tracking-widest flex-grow" id="coupon-display">547A58</p>
+                    
+                    <button id="copy-coupon-btn" title="העתק קוד" class="bg-gray-700 text-white p-2 rounded-lg hover:bg-brand-green/50 transition duration-150 transform hover:scale-105 ml-2">
+                        <i id="copy-icon" class="fas fa-copy text-lg"></i>
+                    </button>
+                </div>
+                <div id="copy-status" class="text-xs text-brand-green mt-1 h-4" data-lang-key="copyStatus"></div>
+            </div>
         </div>
+        <!-- END: Coupon Display with Copy Button -->
+        
         <p class="text-gray-400 mb-6" data-lang-key="successFinalCta">
-            הפרטים שלך נשמרו בהצלחה במערכת. לחץ מטה למעבר מיידי לאתר ושימוש בקוד הקופון שהוצג.
+            האימות בוצע בהצלחה. לחץ מטה למעבר מיידי לאתר ושימוש בקוד הקופון שהוצג.
         </p>
 
         <button id="completeAction" class="neon-cta-button w-full flex justify-center items-center py-3 px-6 rounded-xl text-lg font-black text-gray-900 brand-green focus:outline-none focus:ring-8 focus:ring-offset-2 focus:ring-whatsapp-green/70 transition duration-300 ease-in-out" data-lang-key="successButton">
@@ -179,18 +249,18 @@
     <div id="landing-card" class="modal-card max-w-lg w-full rounded-3xl p-10 space-y-8">
 
         <h1 class="text-4xl font-extrabold text-white text-center leading-snug tracking-wide" data-lang-key="mainTitle">
-            🌿 פורטל פרימיום : קוד קופון מיידי וגישה ל-Apollo
+            <!-- Text content will be set by JavaScript based on current language -->
         </h1>
 
         <p class="text-gray-300 text-center text-base font-light" data-lang-key="subtitle">
-            בהתאם לרגולציה: אנא אשר/י את גילך (**18+**) והסכמתך המלאה לתנאי השימוש שלנו כדי להשלים את ההרשמה.
+            בהתאם לרגולציה: אנא אשר/י את גילך (**18+**) והסכמתך המלאה לתנאי השימוש שלנו כדי לקבל גישה.
         </p>
 
         <form name="apollo-lead" id="ageGateFormNetlify" data-netlify="true" method="POST" class="space-y-6">
             
             <input type="hidden" name="form-name" value="apollo-lead" /> 
 
-            <div id="error-message" class="hidden p-4 bg-red-900/50 border border-red-500 text-red-300 rounded-lg text-sm text-left font-semibold" data-lang-key="errorMsg">
+            <div id="error-message" class="hidden p-4 bg-red-900/50 border border-red-500 text-red-300 rounded-lg text-sm text-right font-semibold" data-lang-key="errorMsg">
                 אימות נכשל. אנא ודא/י שאתה מעל גיל 18 ושכל שדות החובה סומנו ומולאו כראוי.
             </div>
 
@@ -199,28 +269,17 @@
                 <input type="date" id="birthDate" name="birthDate" required class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none text-lg placeholder-gray-500">
             </div>
 
-            <div class="space-y-2">
-                <label for="phoneNumber" class="block text-sm font-bold text-gray-200" data-lang-key="labelPhone">2. מספר טלפון (וואטסאפ) לשליחת הליד:</label>
-                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="05X-XXXXXXX" minlength="9" maxlength="14" class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none text-lg placeholder-gray-500" data-lang-key="placeholderPhone" data-placeholder-en="+1 (555) 555-5555" data-placeholder-he="05X-XXXXXXX">
-            </div>
-
-            <div class="space-y-2">
-                <label for="fullName" class="block text-sm font-medium text-gray-400" data-lang-key="labelName">3. שם מלא (אופציונלי):</label>
-                <input type="text" id="fullName" name="fullName" placeholder="שמך המלא" maxlength="20" class="form-input mt-1 block w-full px-4 py-3 rounded-xl focus:outline-none placeholder-gray-500" data-lang-key="placeholderName" data-placeholder-en="Your Full Name" data-placeholder-he="שמך המלא">
-            </div>
-
-
-            <div class="space-y-4 pt-3 text-left">
+            <div class="space-y-4 pt-3 text-right">
                 <div class="flex items-start">
                     <input id="ageCheck" name="ageCheck" type="checkbox" required class="h-5 w-5 text-brand-green border-gray-600 rounded focus:ring-brand-green mt-1 bg-gray-700">
-                    <label for="ageCheck" class="ml-3 text-base text-gray-300 cursor-pointer font-semibold" data-lang-key="checkAge">
+                    <label for="ageCheck" class="mr-3 text-base text-gray-300 cursor-pointer font-semibold" data-lang-key="checkAge">
                         אני מאשר/ת שאני עומד/ת בדרישות גיל המינימום החוקי (**18+**).
                     </label>
                 </div>
                 <div class="flex items-start">
                     <input id="termsCheck" name="termsCheck" type="checkbox" required class="h-5 w-5 text-brand-green border-gray-600 rounded focus:ring-brand-green mt-1 bg-gray-700">
-                    <label for="termsCheck" class="ml-3 text-base text-gray-300 cursor-pointer font-semibold" data-lang-key="checkTerms">
-                        אני מאשר/ת שקראתי והסכמתי ל<a href="#terms-and-privacy" class="text-brand-green hover:underline font-bold transition duration-150">תנאי השימוש ומדיניות הפרטיות</a>.
+                    <label for="termsCheck" class="mr-3 text-base text-gray-300 cursor-pointer font-semibold" data-lang-key="checkTerms">
+                        אני מאשר/ת שקראתי והסכמתי ל<a href="#" id="policyLink" class="text-brand-green hover:underline font-bold transition duration-150">תנאי השימוש ומדיניות הפרטיות</a>.
                     </label>
                 </div>
             </div>
@@ -235,7 +294,7 @@
         </p>
     </div>
 
-    <footer id="terms-and-privacy" class="footer-fixed bg-gray-900/95 backdrop-blur-lg p-3 text-center text-xs text-gray-500 border-t border-gray-800 shadow-2xl">
+    <footer class="footer-fixed bg-gray-900/95 backdrop-blur-lg p-3 text-center text-xs text-gray-500 border-t border-gray-800 shadow-2xl">
         <span data-lang-key="footerLine1">&copy; APOLLO |כיוונים חברת הפצה משנת 2020. כל הזכויות שמורות.</span>
         <br>
         <span data-lang-key="footerLine2">השימוש באתר כפוף לחוקים המקומיים ומותר רק למשתמשים **מעל גיל 18**.</span>
@@ -251,57 +310,112 @@
         // =======================================================
         const LANGUAGES = {
             'en': {
-                'pageTitle': 'Age Verification & Premium Coupon - Animated Background',
-                'mainTitle': '🌿 Premium Portal Unlocked: Instant Coupon Code and Apollo Access',
-                'subtitle': 'As required by regulation: Please verify your age **(18+)** and full agreement to our Terms of Use to complete registration.',
-                'errorMsg': 'Verification failed. Please ensure you are over 18 and all required fields are correctly marked and filled.',
+                'pageTitle': 'APOLLO: Age & Consent Verification',
+                'mainTitle': 'Welcome to APOLLO! Quick Age Verification (18+)', // Softened
+                'subtitle': 'Before accessing the platform, please confirm you are 18+ and accept our Terms and Privacy Policy.', // Softened
+                'errorMsg': 'Oops! Verification check failed. Please ensure you are 18+ and all required fields are marked correctly.', // Softened
                 'labelBirthDate': '1. Full Date of Birth (DD/MM/YYYY):',
-                'labelPhone': '2. Phone Number (WhatsApp) for lead submission:',
-                'placeholderPhone': '+1 (555) 555-5555',
-                'labelName': '3. Full Name (Optional):',
-                'placeholderName': 'Your Full Name',
                 'checkAge': 'I confirm that I meet the legal minimum age requirement **(18+)**.',
-                'checkTerms': 'I confirm that I have read and agreed to the <a href="#terms-and-privacy" class="text-brand-green hover:underline font-bold transition duration-150">Terms of Use and Privacy Policy</a>.',
-                'ctaButton': 'Confirm and Get Instant Access',
-                'disclaimer': 'Disclaimer: The information does not constitute medical or legal advice.',
-                'footerLine1': '&copy; APOLLO | Distribution Company since 2020. All rights reserved.',
-                'footerLine2': 'Use of this website is subject to local laws and is permitted only for users **aged 18 and over**.',
-                'successTitle': '✅ Success Confirmed!',
-                'successText': 'Your details have been registered. Your exclusive discount code is:',
-                'couponLabel': 'Coupon Code:',
-                'successFinalCta': 'Your details have been successfully saved to the system. Click below for immediate redirection to the store and to use the displayed coupon code.',
-                'successButton': 'Instant Redirection to Store and Coupon Use',
+                'checkTerms': 'I confirm that I have read and agreed to the <a href="#" id="policyLink" class="text-brand-green hover:underline font-bold transition duration-150">Terms of Use and Privacy Policy</a>.',
+                'ctaButton': 'Confirm Age & Get Instant Access', // Softened
+                'disclaimer': 'Regulatory Disclaimer: The information provided does not constitute professional medical or legal advice.',
+                'footerLine1': '&copy; APOLLO. All Rights Reserved. Distribution company since 2020.',
+                'footerLine2': 'Access is permitted only to users **aged 18 and over** and is subject to local laws.', // Softened
+                'successTitle': '✅ Access Granted!', // Softened
+                'successText': 'Your age confirmation was successful. Here is your exclusive premium access code:', // Softened
+                'couponLabel': 'Access Code:',
+                'successFinalCta': 'Verification completed successfully. Click below for immediate redirection to the store and to use the displayed access code.',
+                'successButton': 'Go to APOLLO and Use Coupon Now', // Softened
                 'loadingTitle': 'Animated Background Loading...',
-                'loadingText': 'Form displayed successfully.'
+                'loadingText': 'Form displayed successfully.',
+                'policyTitle': 'Apollo Privacy Policy and Terms of Use',
+                'policyContent': `
+                    <h3 class="text-2xl font-bold text-white mb-3">1. Scope and Minimum Age</h3>
+                    <p>This document outlines the privacy policy and terms of use for the Apollo access portal. Use is strictly limited to individuals who are <strong>18 years of age or older</strong>, in compliance with applicable local laws.</p>
+                    
+                    <h3 class="text-2xl font-bold text-white mt-6 mb-3">2. Data Collection</h3>
+                    <p>The system collects the absolute minimum data required solely for age verification and coupon issuance:</p>
+                    <ul class="list-disc list-inside ml-4 text-gray-400">
+                        <li><strong>Date of Birth:</strong> Used exclusively to calculate and verify the user meets the 18+ minimum age requirement.</li>
+                        <li><strong>Checkboxes:</strong> Confirmation of age requirement and agreement to these terms.</li>
+                    </ul>
+                    <p class="text-yellow-400 font-semibold mt-2">No personal identifying information (PII) such as Full Name, Email, or Phone Number is collected or stored by this specific portal, as these are handled by the main website registration system.</p>
+
+                    <h3 class="text-2xl font-bold text-white mt-6 mb-3">3. Data Usage and Storage</h3>
+                    <p>Collected data (Date of Birth, Checkbox status) is immediately submitted to our backend (Netlify Forms, or equivalent) only to record the successful verification event. We do not store this data locally. It is used solely for regulatory compliance purposes and to enable immediate site access.</p>
+
+                    <h3 class="text-2xl font-bold text-white mt-6 mb-3">4. Terms of Access</h3>
+                    <p>By proceeding, you confirm that you are over 18 and agree to all terms and conditions of the Apollo main platform. <strong>Please note: The sale of products and services is permitted solely under a valid and regulated license.</strong> The coupon code provided is for single use only upon registration to the main site.</p>
+                `,
+                'copyText': 'Copied!', // New text key
+                'copyStatus': '' // New status key
             },
             'he': {
                 'pageTitle': 'אימות גיל וקופון פרימיום - רקע מונפש',
-                'mainTitle': '🌿 פורטל פרימיום נפתח: קוד קופון מיידי וגישה ל-Apollo',
-                'subtitle': 'בהתאם לרגולציה: אנא אשר/י את גילך (**18+**) והסכמתך המלאה לתנאי השימוש שלנו כדי להשלים את ההרשמה.',
+                'mainTitle': 'כיוון שיעשה לכם ראש שקט: APOLLO',
+                'subtitle': 'בהתאם לרגולציה: אנא אשר/י את גילך (**18+**) והסכמתך המלאה לתנאי השימוש שלנו כדי לקבל גישה.',
                 'errorMsg': 'אימות נכשל. אנא ודא/י שאתה מעל גיל 18 ושכל שדות החובה סומנו ומולאו כראוי.',
                 'labelBirthDate': '1. תאריך לידה מלא (DD/MM/YYYY):',
-                'labelPhone': '2. מספר טלפון (וואטסאפ) לשליחת הליד:',
-                'placeholderPhone': '05X-XXXXXXX',
-                'labelName': '3. שם מלא (אופציונלי):',
-                'placeholderName': 'שמך המלא',
-                'checkAge': 'אני מאשר/ת שאני עומד/ת בדרישות גיל המינינימום החוקי (**18+**).',
-                'checkTerms': 'אני מאשר/ת שקראתי והסכמתי ל<a href="#terms-and-privacy" class="text-brand-green hover:underline font-bold transition duration-150">תנאי השימוש ומדיניות הפרטיות</a>.',
+                'checkAge': 'אני מאשר/ת שאני עומד/ת בדרישות גיל המינימום החוקי (**18+**).',
+                'checkTerms': 'אני מאשר/ת שקראתי והסכמתי ל<a href="#" id="policyLink" class="text-brand-green hover:underline font-bold transition duration-150">תנאי השימוש ומדיניות הפרטיות</a>.',
                 'ctaButton': 'אישור וקבלת גישה מיידית',
                 'disclaimer': 'סייג: המידע אינו מהווה ייעוץ רפואי או משפטי.',
                 'footerLine1': '&copy; APOLLO | חברת הפצה משנת 2020. כל הזכויות שמורות.',
                 'footerLine2': 'השימוש באתר כפוף לחוקים המקומיים ומותר רק למשתמשים **מעל גיל 18**.',
                 'successTitle': '✅ אימות הצלחה!',
-                'successText': 'פרטיך נרשמו בהצלחה. קוד ההנחה הבלעדי שלך הוא:',
+                'successText': 'גילך אומת בהצלחה. קוד ההנחה הבלעדי שלך הוא:',
                 'couponLabel': 'קוד קופון:',
-                'successFinalCta': 'הפרטים שלך נשמרו בהצלחה במערכת. לחץ מטה למעבר מיידי לאתר ושימוש בקוד הקופון שהוצג.',
+                'successFinalCta': 'האימות בוצע בהצלחה. לחץ מטה למעבר מיידי לאתר ושימוש בקוד הקופון שהוצג.',
                 'successButton': 'מעבר מיידי לאתר ושימוש בקופון', 
                 'loadingTitle': 'טעינת רקע מונפש...',
-                'loadingText': 'הטופס נטען בהצלחה.'
+                'loadingText': 'הטופס נטען בהצלחה.',
+                'policyTitle': 'מדיניות פרטיות ותנאי שימוש (Apollo)',
+                'policyContent': `
+                    <h3 class="text-2xl font-bold text-white mb-3">1. תחולה וגיל מינימלי</h3>
+                    <p>מסמך זה מפרט את מדיניות הפרטיות ותנאי השימוש של פורטל הגישה Apollo. השימוש מוגבל אך ורק לאנשים שגילם <strong>18 שנים ומעלה</strong>, בהתאם לחוקים המקומיים הרלוונטיים.</p>
+                    
+                    <h3 class="text-2xl font-bold text-white mt-6 mb-3">2. איסוף נתונים</h3>
+                    <p>המערכת אוספת את המידע המינימלי הנדרש אך ורק לאימות גיל והנפקת קופון:</p>
+                    <ul class="list-disc list-inside ml-4 text-gray-400">
+                        <li><strong>תאריך לידה:</strong> משמש באופן בלעדי לחישוב ואימות שהמשתמש עומד בדרישת גיל 18+.</li>
+                        <li><strong>תיבות סימון:</strong> אישור דרישת הגיל וההסכמה לתנאים אלו.</li>
+                    </ul>
+                    <p class="text-yellow-400 font-semibold mt-2">אין איסוף או שמירה של פרטים מזהים אישיים (שם מלא, אימייל, או מספר טלפון) על ידי פורטל זה, מאחר שאלו מטופלים במערכת הרישום של האתר הראשי.</p>
+
+                    <h3 class="text-2xl font-bold text-white mt-6 mb-3">3. שימוש ואחסון בנתונים</h3>
+                    <p>הנתונים הנאספים (תאריך לידה, סטטוס תיבות הסימון) נשלחים באופן מיידי למערכת הקצה שלנו (Netlify Forms, או מקביל) וזאת רק לצורך תיעוד אירוע האימות המוצלח. איננו מאחסנים נתונים אלו באופן מקומי. השימוש בהם הוא אך ורק לצורך עמידה ברגולציה ומתן גישה מיידית לאתר.</p>
+
+                    <h3 class="text-2xl font-bold text-white mt-6 mb-3">4. תנאי גישה</h3>
+                    <p>על ידי המשך הפעולה, אתה מאשר שאתה מעל גיל 18 ומסכים לכל התנאים של הפלטפורמה הראשית של Apollo. <strong>לידיעתך: מכירת מוצרים ושירותים מותרת רק על בסיס רישיון מוסדר ובתוקף.</strong> קוד הקופון שסופק מיועד לשימוש חד-פעמי בלבד בעת הרישום לאתר הראשי.</p>
+                `,
+                'copyText': 'הועתק!', // New text key
+                'copyStatus': '' // New status key
             }
         };
 
-        let currentLang = localStorage.getItem('apolloLang') || 'en';
+        // שינוי ברירת המחדל לעברית
+        let currentLang = localStorage.getItem('apolloLang') || 'he';
         document.getElementById('lang-toggle').textContent = currentLang.toUpperCase() === 'EN' ? 'HE / EN' : 'EN / HE';
+
+        // Get Policy Modal elements
+        const policyModal = document.getElementById('policy-modal');
+        const policyTitleElement = document.getElementById('policy-title');
+        const policyContentElement = document.getElementById('policy-content');
+        const closePolicyModalButton = document.getElementById('close-policy-modal');
+        
+        // Function to open the modal
+        function openPolicyModal(e) {
+            e.preventDefault(); 
+            policyModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling the main page
+        }
+
+        // Function to close the modal
+        function closePolicyModal() {
+            policyModal.classList.add('hidden');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
 
         function switchLanguage(lang) {
             currentLang = lang;
@@ -316,14 +430,17 @@
                 const key = element.getAttribute('data-lang-key');
                 const text = LANGUAGES[lang][key];
 
-                if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
-                    // Handle placeholders (using a specific data attribute for input placeholders)
-                    element.setAttribute('placeholder', element.getAttribute(`data-placeholder-${lang}`));
-                } else if (element.tagName === 'TITLE') {
-                    // Handle page title
+                if (element.tagName === 'TITLE') {
                     document.title = text;
-                } else {
-                    // Use innerHTML for text that contains an anchor tag (like terms check)
+                } else if (key === 'policyContent') {
+                    // Special handling for policy content (HTML rich text)
+                    element.innerHTML = text;
+                } else if (key === 'copyStatus' && element.id === 'copy-status') {
+                    // Do not change status text during switch, let the copy function handle it
+                    // but ensure the element is visible/hidden correctly if needed
+                }
+                else {
+                    // Update general text elements
                     element.innerHTML = text;
                 }
             });
@@ -351,6 +468,9 @@
                      label.classList.remove('mr-3');
                  }
              });
+             
+             // 6. Update Close button text based on lang
+             closePolicyModalButton.textContent = lang === 'he' ? 'סגור (חזור לטופס)' : 'Close (Return to Form)';
         }
 
         // Initialize language on load
@@ -380,11 +500,18 @@
         // UI elements
         const successMessage = document.getElementById('success-message');
         const landingCard = document.getElementById('landing-card');
-        const formElement = document.getElementById('ageGateFormNetlify'); // ה-ID המעודכן
+        const formElement = document.getElementById('ageGateFormNetlify'); 
         const errorMessage = document.getElementById('error-message');
         const completeActionButton = document.getElementById('completeAction');
         const whatsappFloatBtn = document.getElementById('whatsapp-float-btn'); 
         const adminViewBtn = document.getElementById('admin-view-btn'); 
+        
+        // New Copy elements
+        const copyCouponBtn = document.getElementById('copy-coupon-btn');
+        const couponDisplay = document.getElementById('coupon-display');
+        const copyStatus = document.getElementById('copy-status');
+        const copyIcon = document.getElementById('copy-icon');
+
 
         // =======================================================
         // 2. Verification and Form Submission Logic (Netlify Ready)
@@ -398,8 +525,7 @@
             const birthDateInput = document.getElementById('birthDate').value;
             const ageCheck = document.getElementById('ageCheck').checked;
             const termsCheck = document.getElementById('termsCheck').checked;
-            const phoneNumberInput = document.getElementById('phoneNumber').value.replace(/[^0-9+]/g, ''); // נשאר נקי
-
+            
             const today = new Date();
             const birthDate = new Date(birthDateInput);
             let age = today.getFullYear() - birthDate.getFullYear();
@@ -408,8 +534,8 @@
                 age--;
             }
             
-            // 1. Data Validation Check (Client Side)
-            if (age < MINIMUM_AGE || !birthDateInput || phoneNumberInput.length < 9 || !ageCheck || !termsCheck) {
+            // 1. Data Validation Check (Client Side) - Now only checks DOB, Age Checkbox, and Terms Checkbox
+            if (age < MINIMUM_AGE || !birthDateInput || !ageCheck || !termsCheck) {
                 errorMessage.classList.remove('hidden');
                 // The error message text already contains logic for Hebrew/English translation based on currentLang
                 errorMessage.textContent = LANGUAGES[currentLang].errorMsg.replace(/<[^>]*>?/gm, "") + ` (${MINIMUM_AGE}+)`;
@@ -424,6 +550,7 @@
             successMessage.classList.remove('hidden');
             
             // --- B. שליחה אסינכרונית ל-Netlify Forms API (רצה ברקע) ---
+            // Netlify submission still runs to capture the minimal data (DOB, Age Check, Terms Check)
             const data = new FormData(e.target);
             const formActionUrl = window.location.href.split('#')[0];
 
@@ -436,7 +563,7 @@
             })
             .then(response => {
                 if (response.ok) {
-                    console.log('Netlify lead submitted successfully.');
+                    console.log('Netlify form submission successful (minimal data).');
                 } else {
                     // Log the error for debugging production deployment issues
                     console.warn(`Netlify Forms submission failed. Status: ${response.status}. UI simulation successful.`);
@@ -469,21 +596,58 @@
             window.open(whatsappUrl, '_blank');
         });
 
-        // 5. Admin View Button Logic (Activated)
-        adminViewBtn.addEventListener('click', () => {
-            console.log('--- Admin View Button Clicked (Developer Console) ---');
-            console.log('Feature Placeholder: In a real deployment, this would open an admin panel or a dashboard.');
-
-            // Temporary visual feedback (changing to gear icon)
-            const originalIcon = adminViewBtn.innerHTML;
-            adminViewBtn.innerHTML = '⚙️';
-            adminViewBtn.disabled = true;
-
-            setTimeout(() => {
-                adminViewBtn.innerHTML = originalIcon;
-                adminViewBtn.disabled = false;
-            }, 1500);
+        // 5. Policy Modal Event Listeners
+        // Use event delegation on the document body for policyLink, as the element gets re-rendered during language switch
+        document.body.addEventListener('click', (e) => {
+            // Fix: Added check to see if the element or any of its parents is the policy link.
+            const policyLink = e.target.closest('#policyLink');
+            if (policyLink) {
+                console.log('POLICY LINK CLICKED. Attempting to open modal...'); // DIAGNOSTIC LOG
+                openPolicyModal(e);
+            }
         });
+        
+        closePolicyModalButton.addEventListener('click', closePolicyModal);
+
+        // Allow closing modal with ESC key (Completion of user's code)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !policyModal.classList.contains('hidden')) {
+                closePolicyModal();
+            }
+        });
+
+        // =======================================================
+        // 6. Coupon Copy Logic
+        // =======================================================
+        copyCouponBtn.addEventListener('click', () => {
+            const textToCopy = couponDisplay.textContent;
+
+            // Use execCommand for better compatibility inside iframes
+            const tempInput = document.createElement('input');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            // Update UI
+            copyIcon.classList.remove('fa-copy');
+            copyIcon.classList.add('fa-check');
+            copyStatus.textContent = LANGUAGES[currentLang].copyText;
+            
+            // Reset UI after a delay
+            setTimeout(() => {
+                copyIcon.classList.remove('fa-check');
+                copyIcon.classList.add('fa-copy');
+                copyStatus.textContent = '';
+            }, 2000);
+        });
+
+        // Optional: Admin Button Placeholder (does nothing yet)
+        adminViewBtn.addEventListener('click', () => {
+             console.log('Admin View Button Clicked - Placeholder for future feature.');
+        });
+        
     </script>
 </body>
 </html>
