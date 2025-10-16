@@ -608,7 +608,9 @@
         async function fetchAndRenderLeads() {
             leadsList.innerHTML = '<p class="text-yellow-400 text-center">טוען לידים... (Loading leads...)</p>';
 
+            // Check for user object availability immediately
             if (!isFirebaseReady || !db || !auth.currentUser) {
+                // This message should not appear if the retry mechanism works, but it's a fallback.
                 leadsList.innerHTML = '<p class="text-red-400 text-center">שגיאה: Firebase לא מוכן או שלא התחברת כמשתמש המוגדר.</p>';
                 return;
             }
@@ -664,7 +666,7 @@
             adminPasswordInput.focus();
         });
 
-        // Event Listener for Password Form Submission
+        // Event Listener for Password Form Submission - **FIXED RACE CONDITION HERE**
         adminPasswordForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const enteredPassword = adminPasswordInput.value;
@@ -673,7 +675,25 @@
                 // Success: Hide input modal, show admin panel
                 adminInputModal.classList.add('hidden');
                 adminPanel.classList.remove('hidden');
-                fetchAndRenderLeads();
+                
+                // --- FIX: Implement check and retry for Firebase auth ---
+                if (auth && auth.currentUser) {
+                    fetchAndRenderLeads();
+                } else {
+                    // Authentication is still pending. Display message and retry.
+                    leadsList.innerHTML = '<p class="text-yellow-400 text-center">מאמת חיבור ל-Firebase. מנסה שוב בעוד 2 שניות...</p>';
+                    
+                    setTimeout(() => {
+                        if (auth && auth.currentUser) {
+                             fetchAndRenderLeads(); // Success on retry
+                        } else {
+                            // Final failure message if auth still isn't ready after the delay
+                             leadsList.innerHTML = '<p class="text-red-400 text-center">שגיאה: Firebase לא מוכן או שלא התחברת כמשתמש המוגדר.</p>';
+                        }
+                    }, 2000); // 2 second delay for auth to complete
+                }
+                // -----------------------------------------------------
+
             } else {
                 // Failure: Show error, clear input
                 passwordError.classList.remove('hidden');
